@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Guía CSS3 – Tarea 04</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;900&family=Cormorant+Garamond:wght@400;700;900&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --purple:       #5b0080;
+      --purple-mid:   #8b00c4;
+      --purple-light: #c472f0;
+      --red:          #cc0022;
+      --red-light:    #ff4060;
+      --css-blue:     #264de4;
+      --css-light:    #2965f1;
+      --white:        #ffffff;
+      --bg:           #060010;
+      --surface:      rgba(255,255,255,0.04);
+      --border:       rgba(255,255,255,0.08);
+    }
+
+    * { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+
+    body {
+      font-family:'Montserrat', sans-serif;
+      background:var(--bg);
+      color:var(--white);
+      overflow-x:hidden;
+    }
+
+    /* ══ BACK BUTTON ══ */
+    .back-btn {
+      position:fixed; top:22px; left:22px; z-index:100;
+      display:flex; align-items:center; gap:8px;
+      text-decoration:none; color:var(--white);
+      font-size:.76rem; font-weight:700; letter-spacing:.12em;
+      text-transform:uppercase;
+      padding:10px 20px 10px 14px; border-radius:50px;
+      border:1.5px solid rgba(255,255,255,.22);
+      background:rgba(6,0,16,.75); backdrop-filter:blur(12px);
+      transition:all .3s ease;
+    }
+    .back-btn:hover {
+      background:rgba(38,77,228,.3);
+      border-color:#2965f1;
+      transform:translateX(-3px);
+      box-shadow:0 6px 24px rgba(38,77,228,.4);
+    }
+    .back-btn svg { width:16px;height:16px;stroke:white;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round; }
+
+    /* ══ PROGRESS NAV ══ */
+    .progress-nav {
+      position:fixed; right:22px; top:50%; transform:translateY(-50%);
+      z-index:90; display:flex; flex-direction:column; gap:10px;
+    }
+    .pnav-dot {
+      width:10px; height:10px; border-radius:50%;
+      background:rgba(255,255,255,.18); border:1.5px solid rgba(255,255,255,.25);
+      cursor:pointer; transition:all .3s ease; position:relative;
+      text-decoration:none; display:block;
+    }
+    .pnav-dot:hover, .pnav-dot.active {
+      background:#2965f1;
+      border-color:#2965f1;
+      box-shadow:0 0 12px #2965f180;
+    }
+    .pnav-dot::before {
+      content:attr(data-label);
+      position:absolute; right:18px; top:50%; transform:translateY(-50%);
+      background:rgba(6,0,16,.95); color:white;
+      font-size:.62rem; font-weight:600; letter-spacing:.1em;
+      padding:4px 10px; border-radius:20px; white-space:nowrap;
+      opacity:0; transition:opacity .2s ease; pointer-events:none;
+      border:1px solid rgba(255,255,255,.1);
+    }
+    .pnav-dot:hover::before { opacity:1; }
+    @media(max-width:768px){ .progress-nav{ display:none; } }
+
+    /* ══ HERO ══ */
+    .hero {
+      min-height:100vh; position:relative;
+      display:flex; align-items:center; justify-content:flex-start;
+      padding:100px 6% 90px; overflow:hidden;
+    }
+
+    .hero-bg {
+      position:absolute; inset:0;
+      background:linear-gradient(130deg,
+        #030010 0%,
+        #0d0030 18%,
+        #1a0050 35%,
+        #12006e 52%,
+        #001266 68%,
+        #0022aa 82%,
+        #2965f1 100%
+      );
+    }
+
+    /* Animated CSS property words */
+    .css-words {
+      position:absolute; inset:0; overflow:hidden; pointer-events:none;
+    }
+    .css-word {
+      position:absolute;
+      font-family:'Fira Code', monospace;
+      color:rgba(41,101,241,0.13);
+      font-weight:500; white-space:nowrap;
+      animation:drift linear infinite;
+    }
+    @keyframes drift {
+      from { transform:translateX(-20%) translateY(110vh); opacity:0; }
+      5%   { opacity:1; }
+      95%  { opacity:1; }
+      to   { transform:translateX(20%) translateY(-20vh); opacity:0; }
+    }
+
+    /* Floating color swatches */
+    .swatch {
+      position:absolute; border-radius:50%;
+      filter:blur(80px); pointer-events:none;
+    }
+    .sw1{width:450px;height:450px;background:#264de4;opacity:.22;top:-100px;right:-80px;}
+    .sw2{width:350px;height:350px;background:#8b00c4;opacity:.28;bottom:-60px;left:-60px;}
+    .sw3{width:200px;height:200px;background:#2965f1;opacity:.15;top:30%;left:40%;}
+
+    /* CSS3 watermark */
+    .hero-watermark {
+      position:absolute; right:-20px; top:50%; transform:translateY(-52%);
+      font-size:clamp(13rem,28vw,24rem);
+      font-family:'Cormorant Garamond',serif; font-weight:900;
+      color:rgba(41,101,241,0.06); line-height:1;
+      user-select:none; pointer-events:none; letter-spacing:-.04em;
+    }
+
+    .hero-inner { position:relative; z-index:2; max-width:700px; }
+
+    .hero-badge {
+      display:inline-flex; align-items:center; gap:8px;
+      font-size:.68rem; font-weight:700; letter-spacing:.4em;
+      text-transform:uppercase; color:rgba(255,255,255,.75);
+      border:1px solid rgba(255,255,255,.2); background:rgba(255,255,255,.07);
+      padding:6px 18px; border-radius:50px; margin-bottom:22px;
+      animation:fadeUp .8s ease both;
+    }
+    .hero-badge span { width:6px; height:6px; border-radius:50%; background:#2965f1; animation:blink 1.5s ease infinite; }
+
+    .hero-title {
+      font-family:'Cormorant Garamond',serif;
+      font-size:clamp(3rem,9vw,6.5rem); font-weight:900; line-height:1;
+      color:var(--white); text-shadow:0 0 80px rgba(41,101,241,.5);
+      animation:fadeUp .8s ease .1s both;
+    }
+    .hero-title em {
+      font-style:normal;
+      background:linear-gradient(90deg,#60a5fa,#2965f1,#c472f0);
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+    }
+    .hero-sub {
+      margin-top:16px; font-size:clamp(.85rem,2vw,1rem); font-weight:300;
+      color:rgba(255,255,255,.6); line-height:1.75; max-width:540px;
+      animation:fadeUp .8s ease .2s both;
+    }
+
+    /* Live demo mini-card inside hero */
+    .hero-demo {
+      margin-top:32px;
+      display:flex; gap:14px; flex-wrap:wrap; align-items:center;
+      animation:fadeUp .8s ease .3s both;
+    }
+    .demo-card {
+      padding:16px 20px; border-radius:14px;
+      border:1px solid rgba(41,101,241,.35);
+      background:rgba(41,101,241,.1); backdrop-filter:blur(8px);
+      font-size:.75rem; color:rgba(255,255,255,.7); line-height:1.6;
+    }
+    .demo-card strong { color:#60a5fa; display:block; font-size:.68rem; letter-spacing:.2em; text-transform:uppercase; margin-bottom:4px; }
+
+    .hero-jumps {
+      display:flex; flex-wrap:wrap; gap:10px; margin-top:20px;
+      animation:fadeUp .8s ease .4s both;
+    }
+    .jump-pill {
+      padding:7px 16px; border-radius:50px; text-decoration:none;
+      font-size:.68rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase;
+      border:1px solid rgba(255,255,255,.15); background:rgba(255,255,255,.07);
+      color:rgba(255,255,255,.7); transition:all .25s ease;
+    }
+    .jump-pill:hover { background:rgba(41,101,241,.3); border-color:rgba(41,101,241,.6); color:#fff; transform:translateY(-2px); }
+
+    .hero-line { position:absolute; bottom:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,rgba(41,101,241,.5),rgba(196,114,240,.4),transparent); }
+
+    /* ══ CONTENT ══ */
+    .content { max-width:960px; margin:0 auto; padding:80px 5% 100px; }
+
+    /* Module */
+    .module { margin-bottom:72px; }
+
+    .module-header {
+      display:flex; align-items:flex-start; gap:18px; margin-bottom:30px;
+      padding-bottom:18px; border-bottom:1px solid var(--border);
+    }
+    .module-num {
+      flex-shrink:0; width:54px; height:54px; border-radius:16px;
+      display:flex; align-items:center; justify-content:center;
+      font-family:'Cormorant Garamond',serif; font-size:1.5rem; font-weight:900;
+      background:linear-gradient(135deg,#264de4,var(--purple-mid));
+      color:white;
+    }
+    .module-title-wrap h2 {
+      font-family:'Cormorant Garamond',serif;
+      font-size:clamp(1.5rem,3.5vw,2rem); font-weight:900; color:var(--white); line-height:1.1;
+    }
+    .module-title-wrap p { font-size:.75rem; letter-spacing:.2em; color:rgba(255,255,255,.4); text-transform:uppercase; margin-top:5px; }
+
+    .module > p { font-size:.875rem; line-height:1.9; color:rgba(255,255,255,.67); margin-bottom:18px; }
+    .module > p strong { color:var(--white); }
+
+    /* ── Tip / Warn boxes ── */
+    .tip-box, .warn-box, .good-box {
+      display:flex; gap:14px; padding:18px 20px; border-radius:14px; margin:22px 0;
+    }
+    .tip-box  { background:rgba(41,101,241,.08);  border:1px solid rgba(41,101,241,.25); }
+    .warn-box { background:rgba(228,77,38,.08);   border:1px solid rgba(228,77,38,.25); }
+    .good-box { background:rgba(16,185,129,.08);  border:1px solid rgba(16,185,129,.25); }
+    .tip-icon { font-size:1.3rem; flex-shrink:0; margin-top:1px; }
+    .tip-box p, .warn-box p, .good-box p { margin:0; font-size:.82rem; line-height:1.7; color:rgba(255,255,255,.7); }
+    .tip-box p strong  { color:#60a5fa; }
+    .warn-box p strong { color:#fb923c; }
+    .good-box p strong { color:#6ee7b7; }
+
+    /* ── Code block ── */
+    .code-block { border-radius:16px; overflow:hidden; border:1px solid var(--border); margin:22px 0; }
+    .code-header {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:10px 18px; background:rgba(255,255,255,.04); border-bottom:1px solid var(--border);
+    }
+    .code-dots { display:flex; gap:6px; }
+    .code-dots span { width:10px; height:10px; border-radius:50%; }
+    .dot-r{background:#ff5f57;} .dot-y{background:#febc2e;} .dot-g{background:#28c840;}
+    .code-file { font-family:'Fira Code',monospace; font-size:.68rem; color:rgba(255,255,255,.3); letter-spacing:.1em; }
+    pre {
+      font-family:'Fira Code',monospace; font-size:.79rem; line-height:1.85;
+      padding:20px 22px; overflow-x:auto;
+      background:rgba(0,0,0,.4); color:rgba(255,255,255,.85);
+    }
+    /* Syntax tokens */
+    .sel  { color:#c472f0; }
+    .prp  { color:#60a5fa; }
+    .val  { color:#86efac; }
+    .unit { color:#fbbf24; }
+    .cm   { color:#6b7280; font-style:italic; }
+    .at   { color:#f87171; }
+    .fn   { color:#fb923c; }
+    .num  { color:#fbbf24; }
+
+    /* ── Property table ── */
+    .prop-table { width:100%; border-collapse:collapse; margin:22px 0; font-size:.8rem; }
+    .prop-table th {
+      text-align:left; padding:10px 14px;
+      background:rgba(38,77,228,.2); color:rgba(255,255,255,.7);
+      font-size:.68rem; letter-spacing:.2em; text-transform:uppercase;
+      border-bottom:1px solid rgba(38,77,228,.3);
+    }
+    .prop-table td {
+      padding:11px 14px; border-bottom:1px solid var(--border);
+      color:rgba(255,255,255,.65); line-height:1.5; vertical-align:top;
+    }
+    .prop-table tr:last-child td { border-bottom:none; }
+    .prop-table tr:hover td { background:rgba(255,255,255,.03); }
+    .prop-table td:first-child { font-family:'Fira Code',monospace; font-size:.78rem; color:#60a5fa; white-space:nowrap; }
+    .prop-table td strong { color:var(--white); }
+
+    /* ── Visual demo boxes ── */
+    .demo-row { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:16px; margin:24px 0; }
+    .demo-box {
+      padding:20px; border-radius:14px; text-align:center;
+      background:var(--surface); border:1px solid var(--border);
+      font-size:.78rem; color:rgba(255,255,255,.7); line-height:1.6;
+    }
+    .demo-box .demo-label { font-size:.62rem; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:rgba(255,255,255,.4); margin-bottom:10px; }
+    .demo-box .demo-visual { border-radius:10px; margin-bottom:10px; height:60px; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:.9rem; }
+
+    /* ── Checklist ── */
+    .checklist { list-style:none; margin:22px 0; }
+    .checklist li {
+      display:flex; align-items:flex-start; gap:12px;
+      padding:13px 0; border-bottom:1px solid var(--border);
+      font-size:.83rem; color:rgba(255,255,255,.7); line-height:1.65;
+    }
+    .checklist li:last-child { border-bottom:none; }
+    .check-icon { font-size:1rem; flex-shrink:0; margin-top:2px; }
+    .checklist li strong { color:var(--white); }
+
+    /* ── Step list ── */
+    .step-list { list-style:none; margin:22px 0; }
+    .step-list li {
+      display:flex; align-items:flex-start; gap:14px;
+      padding:14px 0; border-bottom:1px solid var(--border);
+      font-size:.84rem; color:rgba(255,255,255,.7); line-height:1.65;
+    }
+    .step-list li:last-child { border-bottom:none; }
+    .step-num {
+      flex-shrink:0; width:28px; height:28px; border-radius:8px;
+      background:linear-gradient(135deg,#264de4,var(--purple-mid));
+      display:flex; align-items:center; justify-content:center;
+      font-size:.7rem; font-weight:900; color:white; margin-top:1px;
+    }
+    .step-list li strong { color:var(--white); }
+
+    /* ── Section divider ── */
+    .sec-divider { height:1px; margin:60px 0; background:linear-gradient(90deg,transparent,rgba(41,101,241,.35),rgba(196,114,240,.3),transparent); }
+
+    /* ══ FOOTER ══ */
+    footer {
+      background:#030008; border-top:3px solid;
+      border-image:linear-gradient(90deg,#264de4,#8b00c4) 1;
+      padding:44px 6%; display:flex; flex-direction:column;
+      align-items:center; gap:10px; text-align:center;
+    }
+    .ft-school { font-family:'Cormorant Garamond',serif; font-size:1.4rem; font-weight:900; letter-spacing:.12em; color:var(--white); }
+    .ft-sep { width:48px; height:1px; background:rgba(255,255,255,.15); }
+    .ft-info { font-size:.74rem; letter-spacing:.15em; text-transform:uppercase; color:rgba(255,255,255,.4); }
+    .ft-name { font-size:.82rem; font-weight:600; letter-spacing:.14em; color:var(--purple-light); }
+
+    /* ══ ANIMATIONS ══ */
+    @keyframes fadeUp { from{opacity:0;transform:translateY(26px);}to{opacity:1;transform:translateY(0);} }
+    @keyframes blink { 0%,100%{opacity:1;}50%{opacity:.2;} }
+    @keyframes spin { from{transform:rotate(0deg);}to{transform:rotate(360deg);} }
+  </style>
+</head>
+<body>
+
+<!-- BACK -->
+<a href="index2.html" class="back-btn">
+  <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+  Volver al portafolio
+</a>
+
+<!-- PROGRESS NAV -->
+<nav class="progress-nav">
+  <a href="#m0" class="pnav-dot" data-label="¿Qué es CSS3?"></a>
+  <a href="#m1" class="pnav-dot" data-label="Cómo vincular CSS"></a>
+  <a href="#m2" class="pnav-dot" data-label="Selectores"></a>
+  <a href="#m3" class="pnav-dot" data-label="Box Model"></a>
+  <a href="#m4" class="pnav-dot" data-label="Colores y Tipografía"></a>
+  <a href="#m5" class="pnav-dot" data-label="Flexbox"></a>
+  <a href="#m6" class="pnav-dot" data-label="Grid"></a>
+  <a href="#m7" class="pnav-dot" data-label="Animaciones"></a>
+  <a href="#m8" class="pnav-dot" data-label="Responsive Design"></a>
+  <a href="#m9" class="pnav-dot" data-label="Variables y Buenas prácticas"></a>
+</nav>
+
+<!-- ══════════ HERO ══════════ -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="swatch sw1"></div>
+  <div class="swatch sw2"></div>
+  <div class="swatch sw3"></div>
+  <div class="hero-watermark">CSS</div>
+  <div class="css-words" id="cssWords"></div>
+
+  <div class="hero-inner">
+    <div class="hero-badge"><span></span>Tarea 04 &nbsp;·&nbsp; Cultura Digital 2</div>
+
+    <h1 class="hero-title">
+      Guía para<br/>aprender <em>CSS3</em>
+    </h1>
+
+    <p class="hero-sub">
+      El lenguaje que transforma páginas HTML en experiencias visuales impresionantes. Aprende a controlar colores, tipografía, layouts, animaciones y diseño responsivo desde cero.
+    </p>
+
+    <div class="hero-demo">
+      <div class="demo-card">
+        <strong>Sin CSS</strong>
+        Texto negro sobre fondo blanco,<br/>sin formato ni organización visual.
+      </div>
+      <div style="color:rgba(255,255,255,.4);font-size:1.5rem;">→</div>
+      <div class="demo-card" style="background:linear-gradient(135deg,rgba(41,101,241,.2),rgba(139,0,196,.2));border-color:rgba(196,114,240,.4);">
+        <strong style="color:#c472f0;">Con CSS3</strong>
+        Colores, fuentes, animaciones,<br/>layouts flexibles y mucho más. ✨
+      </div>
+    </div>
+
+    <div class="hero-jumps">
+      <a href="#m0" class="jump-pill">¿Qué es?</a>
+      <a href="#m1" class="jump-pill">Vincular CSS</a>
+      <a href="#m2" class="jump-pill">Selectores</a>
+      <a href="#m3" class="jump-pill">Box Model</a>
+      <a href="#m4" class="jump-pill">Colores</a>
+      <a href="#m5" class="jump-pill">Flexbox</a>
+      <a href="#m6" class="jump-pill">Grid</a>
+      <a href="#m7" class="jump-pill">Animaciones</a>
+      <a href="#m8" class="jump-pill">Responsive</a>
+      <a href="#m9" class="jump-pill">Variables</a>
+    </div>
+  </div>
+  <div class="hero-line"></div>
+</section>
+
+<!-- ══════════ CONTENT ══════════ -->
+<main class="content">
+
+  <!-- ── M0: ¿Qué es CSS3? ── -->
+  <div id="m0" class="module">
+    <div class="module-header">
+      <div class="module-num">0</div>
+      <div class="module-title-wrap">
+        <h2>¿Qué es CSS3?</h2>
+        <p>Definición · Cascada · Especificidad</p>
+      </div>
+    </div>
+
+    <p><strong>CSS3 (Cascading Style Sheets, nivel 3)</strong> es el lenguaje que controla toda la <strong>apariencia visual</strong> de las páginas web: colores, tipografías, tamaños, espaciados, posiciones, animaciones y mucho más. Sin CSS, toda la Web se vería como un documento de texto sin formato.</p>
+
+    <p>La palabra <strong>"Cascading"</strong> (en cascada) describe cómo funcionan las reglas de estilo: si hay varias reglas que afectan al mismo elemento, el navegador aplica una jerarquía (especificidad + orden) para determinar cuál gana. CSS3 es la versión actual y agrega funcionalidades que antes solo eran posibles con imágenes o JavaScript: degradados, sombras, animaciones, variables nativas, Flexbox y Grid.</p>
+
+    <div class="tip-box">
+      <div class="tip-icon">🎨</div>
+      <p><strong>Analogía:</strong> Si HTML es la <em>estructura</em> de una casa (paredes, puertas), CSS es el <strong>diseño de interiores</strong>: el color de las paredes, el tamaño de los muebles, la iluminación y la decoración. El mismo HTML puede verse completamente diferente solo cambiando el CSS.</p>
+    </div>
+
+    <p>Una regla CSS tiene siempre la misma estructura: un <strong>selector</strong> que apunta al elemento HTML y un bloque de <strong>declaraciones</strong> con pares propiedad–valor:</p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <div class="code-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div>
+        <span class="code-file">anatomia-de-una-regla.css</span>
+      </div>
+      <pre><span class="cm">/* ── Anatomía de una regla CSS ── */</span>
+
+<span class="sel">selector</span> {           <span class="cm">/* ← ¿A qué elemento aplica? */</span>
+  <span class="prp">propiedad</span>: <span class="val">valor</span>;  <span class="cm">/* ← Declaración */</span>
+  <span class="prp">propiedad</span>: <span class="val">valor</span>;  <span class="cm">/* ← Pueden ser múltiples */</span>
+}
+
+<span class="cm">/* Ejemplo real */</span>
+<span class="sel">h1</span> {
+  <span class="prp">color</span>:       <span class="val">#8b00c4</span>;   <span class="cm">/* Color del texto */</span>
+  <span class="prp">font-size</span>:   <span class="val">2.5rem</span>;   <span class="cm">/* Tamaño de fuente */</span>
+  <span class="prp">text-align</span>:  <span class="val">center</span>;   <span class="cm">/* Alineación */</span>
+}</pre>
+    </div>
+  </div>
+
+  <div class="sec-divider"></div>
+
+  <!-- ── M1: Cómo vincular CSS ── -->
+  <div id="m1" class="module">
+    <div class="module-header">
+      <div class="module-num">1</div>
+      <div class="module-title-wrap">
+        <h2>¿Cómo vincular CSS a HTML?</h2>
+        <p>3 formas · Cuál usar · Prioridades</p>
+      </div>
+    </div>
+
+    <p>Existen <strong>tres formas</strong> de agregar CSS a un documento HTML. Cada una tiene sus casos de uso, pero en proyectos reales siempre se prefiere la hoja de estilos externa:</p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <div class="code-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div>
+        <span class="code-file">formas-de-vincular.html</span>
+      </div>
+      <pre><span class="cm">&lt;!-- ① HOJA EXTERNA (✅ recomendada para proyectos) --&gt;</span>
+<span class="cm">&lt;!-- Crea un archivo estilos.css y enlázalo en el &lt;head&gt; --&gt;</span>
+&lt;<span class="at">link</span> <span class="prp">rel</span>=<span class="val">"stylesheet"</span> <span class="prp">href</span>=<span class="val">"estilos.css"</span>/&gt;
+
+<span class="cm">&lt;!-- ② ESTILOS INTERNOS (⚠️ solo para páginas únicas o pruebas) --&gt;</span>
+<span class="cm">&lt;!-- Dentro del &lt;head&gt; de tu HTML --&gt;</span>
+&lt;<span class="at">style</span>&gt;
+  <span class="sel">body</span> { <span class="prp">background</span>: <span class="val">#0a0010</span>; }
+&lt;/<span class="at">style</span>&gt;
+
+<span class="cm">&lt;!-- ③ ESTILOS EN LÍNEA (🚫 evita usarlos, dificultan el mantenimiento) --&gt;</span>
+<span class="cm">&lt;!-- Directo en el elemento HTML --&gt;</span>
+&lt;<span class="at">p</span> <span class="prp">style</span>=<span class="val">"color: red; font-size: 18px;"</span>&gt;Texto con estilo en línea&lt;/<span class="at">p</span>&gt;</pre>
+    </div>
+
+    <div class="good-box">
+      <div class="tip-icon">✅</div>
+      <p><strong>Siempre usa hoja externa:</strong> Crea un archivo <code style="color:#6ee7b7;font-family:'Fira Code',monospace">estilos.css</code> separado y enlázalo con <code style="color:#6ee7b7;font-family:'Fira Code',monospace">&lt;link&gt;</code>. Así puedes reutilizar los mismos estilos en múltiples páginas y el código queda organizado y fácil de mantener.</p>
+    </div>
+
+    <div class="warn-box">
+      <div class="tip-icon">⚠️</div>
+      <p><strong>Orden de prioridad (especificidad):</strong> El estilo en línea <strong>siempre gana</strong> sobre los internos y externos. Los internos ganan sobre los externos. Por eso los estilos en línea son difíciles de sobreescribir y se convierten en un problema en proyectos grandes.</p>
+    </div>
+  </div>
+
+  <div class="sec-divider"></div>
+
+  <!-- ── M2: Selectores ── -->
+  <div id="m2" class="module">
+    <div class="module-header">
+      <div class="module-num">2</div>
+      <div class="module-title-wrap">
+        <h2>Selectores CSS</h2>
+        <p>Básicos · Combinados · Pseudo-clases · Pseudo-elementos</p>
+      </div>
+    </div>
+
+    <p>Los <strong>selectores</strong> son el mecanismo con el que le dices a CSS <em>"aplica estos estilos a estos elementos"</em>. Dominar los selectores es fundamental: te permite aplicar estilos de forma precisa sin tocar el HTML.</p>
+
+    <table class="prop-table">
+      <thead><tr><th>Selector</th><th>Ejemplo</th><th>Qué selecciona</th></tr></thead>
+      <tbody>
+        <tr><td>Etiqueta</td><td style="font-family:'Fira Code',monospace;font-size:.78rem;color:#86efac;">p { }</td><td>Todos los elementos <code style="color:#f87171;font-family:'Fira Code',monospace;">&lt;p&gt;</code> de la página.</td></tr>
+        <tr><td>Clase</td><td style="font-family:'Fira Code',monospace;font-size:.78rem;color:#86efac;">.tarjeta { }</td><td>Todos los elementos con <code style="color:#60a5fa;font-family:'Fira Code',monospace;">class="tarjeta"</code>. El más usado.</td></tr>
+        <tr><td>ID</td><td style="font-family:'Fira Code',monospace;font-size:.78rem;color:#86efac;">#menu { }</td><td>El elemento único con <code style="color:#60a5fa;font-family:'Fira Code',monospace;">id="menu"</code>. Alta especificidad.</td></tr>
+        <tr><td>Universal</td><td style="font-family:'Fira Code',monospace;font-size:.78rem;color:#86efac;">* { }</td><td><strong>Todos</strong> los elementos. Útil para resets globales.</td></tr>
+        <tr><td>Descendiente</td><td style="font-family:'Fira Code',monospace;font-size:.78rem;color:#86efac;">nav a { }</td><td>Todos los <code style="color:#f87171;font-family:'Fira Code',monospace;">&lt;a&gt;</code> que estén dentro de un <code style="color:#f87171;font-family:'Fira Code',monospace;">&lt;nav&gt;</code>.</td></tr>
+        <tr><td>Hijo directo</td><td style="font-family:'Fira Code',monospace;font-size:.78rem;color:#86efac;">ul > li { }</td><td>Solo los <code style="color:#f87171;font-family:'Fira Code',monospace;">&lt;li&gt;</code> que son hijos directos de <code style="color:#f87171;font-family:'Fira Code',monospace;">&lt;ul&gt;</code>.</td></tr>
+        <tr><td>Pseudo-clase</td><td style="font-family:'Fira Code',monospace;font-size:.78rem;color:#86efac;">a:hover { }</td><td>El enlace cuando el cursor está encima. Hay decenas de pseudo-clases.</td></tr>
+        <tr><td>Pseudo-elemento</td><td style="font-family:'Fira Code',monospace;font-size:.78rem;color:#86efac;">p::first-line { }</td><td>La primera línea de cada párrafo. Crea contenido virtual.</td></tr>
+        <tr><td>Atributo</td><td style="font-family:'Fira Code',monospace;font-size:.78rem;color:#86efac;">input[type="email"]</td><td>Todos los inputs de tipo email.</td></tr>
+        <tr><td>Múltiple</td><td style="font-family:'Fira Code',monospace;font-size:.78rem;color:#86efac;">h1, h2, h3 { }</td><td>Aplica el mismo estilo a varios elementos separados por coma.</td></tr>
+      </tbody>
+    </table>
+
+    <div class="code-block">
+      <div class="code-header">
+        <div class="code-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div>
+        <span class="code-file">selectores.css</span>
+      </div>
+      <pre><span class="cm">/* ① Selector de clase (el más usado en proyectos) */</span>
+<span class="sel">.btn-primario</span> {
+  <span class="prp">background</span>:    <span class="val">linear-gradient(135deg, #264de4, #8b00c4)</span>;
+  <span class="prp">color</span>:         <span class="val">#fff</span>;
+  <span class="prp">padding</span>:       <span class="val">12px 28px</span>;
+  <span class="prp">border-radius</span>: <span class="val">50px</span>;
+  <span class="prp">border</span>:        <span class="val">none</span>;
+  <span class="prp">cursor</span>:        <span class="val">pointer</span>;
+}
+
+<span class="cm">/* ② Pseudo-clase :hover (interacción del usuario) */</span>
+<span class="sel">.btn-primario:hover</span> {
+  <span class="prp">transform</span>:  <span class="val">translateY(-3px)</span>;
+  <span class="prp">box-shadow</span>: <span class="val">0 8px 24px rgba(41, 101, 241, 0.5)</span>;
+}
+
+<span class="cm">/* ③ Pseudo-clase :nth-child (filas alternas de tabla) */</span>
+<span class="sel">tr:nth-child(even)</span> {
+  <span class="prp">background</span>: <span class="val">rgba(255, 255, 255, 0.04)</span>;
+}
+
+<span class="cm">/* ④ Pseudo-elemento ::before (contenido decorativo) */</span>
+<span class="sel">.seccion::before</span> {
+  <span class="prp">content</span>:     <span class="val">""</span>;
+  <span class="prp">display</span>:     <span class="val">block</span>;
+  <span class="prp">width</span>:       <span class="val">60px</span>;
+  <span class="prp">height</span>:      <span class="val">3px</span>;
+  <span class="prp">background</span>:  <span class="val">linear-gradient(90deg, #264de4, #8b00c4)</span>;
+  <span class="prp">margin-bottom</span>: <span class="val">16px</span>;
+}
+
+<span class="cm">/* ⑤ Selector de atributo */</span>
+<span class="sel">a[target="_blank"]</span>::after {
+  <span class="prp">content</span>: <span class="val">" ↗"</span>; <span class="cm">/* Indica enlace externo */</span>
+}</pre>
+    </div>
+  </div>
+
+  <div class="sec-divider"></div>
+
+  <!-- ── M3: Box Model ── -->
+  <div id="m3" class="module">
+    <div class="module-header">
+      <div class="module-num">3</div>
+      <div class="module-title-wrap">
+        <h2>El Modelo de Caja (Box Model)</h2>
+        <p>Margin · Border · Padding · Content</p>
+      </div>
+    </div>
+
+    <p>El <strong>Box Model</strong> es el concepto más importante de CSS. <strong>Todo elemento HTML es una caja</strong> compuesta por cuatro capas concéntricas. Entender cómo funcionan es la clave para controlar el espaciado y tamaño de cualquier elemento:</p>
+
+    <!-- Visual diagram of box model -->
+    <div style="margin:28px 0;display:flex;justify-content:center;">
+      <svg viewBox="0 0 480 300" width="100%" max-width="480" xmlns="http://www.w3.org/2000/svg" style="max-width:480px;">
+        <!-- Margin (outer) -->
+        <rect x="10" y="10" width="460" height="280" rx="10" fill="rgba(255,100,0,0.08)" stroke="#fb923c" stroke-width="1.5" stroke-dasharray="6,4"/>
+        <text x="30" y="30" font-family="Fira Code,monospace" font-size="11" fill="#fb923c">MARGIN</text>
+        <!-- Border -->
+        <rect x="50" y="45" width="380" height="210" rx="8" fill="rgba(41,101,241,0.1)" stroke="#2965f1" stroke-width="2"/>
+        <text x="68" y="64" font-family="Fira Code,monospace" font-size="11" fill="#2965f1">BORDER</text>
+        <!-- Padding -->
+        <rect x="80" y="75" width="320" height="155" rx="6" fill="rgba(16,185,129,0.08)" stroke="rgba(16,185,129,0.5)" stroke-width="1.5" stroke-dasharray="4,3"/>
+        <text x="98" y="94" font-family="Fira Code,monospace" font-size="11" fill="#6ee7b7">PADDING</text>
+        <!-- Content -->
+        <rect x="120" y="105" width="240" height="95" rx="6" fill="rgba(196,114,240,0.2)" stroke="#c472f0" stroke-width="2"/>
+        <text x="240" y="148" text-anchor="middle" font-family="Fira Code,monospace" font-size="13" fill="#c472f0" font-weight="bold">CONTENT</text>
+        <text x="240" y="166" text-anchor="middle" font-family="Fira Code,monospace" font-size="10" fill="rgba(196,114,240,0.6)">width × height</text>
+        <!-- Labels -->
+        <text x="240" y="292" text-anchor="middle" font-family="Fira Code,monospace" font-size="10" fill="rgba(255,255,255,0.3)">Espacio exterior entre elementos</text>
+      </svg>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">
+        <div class="code-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div>
+        <span class="code-file">box-model.css</span>
+      </div>
+      <pre><span class="cm">/* ── Box Model completo de una tarjeta ── */</span>
+<span class="sel">.tarjeta</span> {
+  <span class="cm">/* CONTENT: tamaño del contenido interno */</span>
+  <span class="prp">width</span>:  <span class="val">320px</span>;
+  <span class="prp">height</span>: <span class="val">auto</span>;
+
+  <span class="cm">/* PADDING: espacio entre el contenido y el borde */</span>
+  <span class="prp">padding</span>: <span class="val">24px 28px</span>;     <span class="cm">/* arriba/abajo  izq/der */</span>
+  <span class="cm">/* Equivalente a: */</span>
+  <span class="prp">padding-top</span>:    <span class="val">24px</span>;
+  <span class="prp">padding-right</span>:  <span class="val">28px</span>;
+  <span class="prp">padding-bottom</span>: <span class="val">24px</span>;
+  <span class="prp">padding-left</span>:   <span class="val">28px</span>;
+
+  <span class="cm">/* BORDER: borde visible alrededor del elemento */</span>
+  <span class="prp">border</span>:        <span class="val">2px solid #264de4</span>;
+  <span class="prp">border-radius</span>: <span class="val">16px</span>;
+
+  <span class="cm">/* MARGIN: espacio exterior entre esta caja y otras */</span>
+  <span class="prp">margin</span>: <span class="val">0 auto</span>;      <span class="cm">/* 0 arriba/abajo, auto izq/der = centrado */</span>
+  <span class="prp">margin-bottom</span>: <span class="val">24px</span>;
+
+  <span class="cm">/* ⭐ IMPORTANTE: incluye padding y border en el width */</span>
+  <span class="prp">box-sizing</span>: <span class="val">border-box</span>;
+}
+
+<span class="cm">/* Reset global recomendado: aplicar box-sizing a todo */</span>
+<span class="sel">*, *::before, *::after</span> {
+  <span class="prp">box-sizing</span>: <span class="val">border-box</span>;
+}</pre>
+    </div>
+
+    <div class="tip-box">
+      <div class="tip-icon">⭐</div>
+      <p><strong>box-sizing: border-box</strong> es el reset más importante de CSS. Sin él, si defines <code style="color:#60a5fa;font-family:'Fira Code',monospace;">width: 300px</code> y luego agregas <code style="color:#60a5fa;font-family:'Fira Code',monospace;">padding: 20px</code>, el elemento mide 340px (¡más de lo esperado!). Con <code style="color:#60a5fa;font-family:'Fira Code',monospace;">border-box</code>, el padding y el border se incluyen dentro del width declarado. <strong>Siempre ponlo como reset global.</strong></p>
+    </div>
+  </div>
+
+  <div class="sec-divider"></div>
+
+  <!-- ── M4: Colores y Tipografía ── -->
+  <div id="m4" class="module">
+    <div class="module-header">
+      <div class="module-num">4</div>
+      <div class="module-title-wrap">
+        <h2>Colores y Tipografía</h2>
+        <p>Formatos de color · Fuentes · Espaciado de texto</p>
+      </div>
+    </div>
+
+    <p>CSS3 ofrece múltiples formas de definir colores y control total sobre la tipografía. Saber combinarlos es lo que da <strong>identidad visual</strong> a una página.</p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <div class="code-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div>
+        <span class="code-file">colores-y-tipografia.css</span>
+      </div>
+      <pre><span class="cm">/* ── Formatos de color en CSS3 ── */</span>
+<span class="sel">.ejemplos-color</span> {
+  <span class="prp">color</span>: <span class="val">red</span>;                          <span class="cm">/* Nombre de color */</span>
+  <span class="prp">color</span>: <span class="val">#8b00c4</span>;                      <span class="cm">/* Hexadecimal (el más usado) */</span>
+  <span class="prp">color</span>: <span class="val">rgb(139, 0, 196)</span>;             <span class="cm">/* RGB: rojo, verde, azul (0-255) */</span>
+  <span class="prp">color</span>: <span class="val">rgba(139, 0, 196, 0.7)</span>;      <span class="cm">/* RGBA: igual + transparencia (0-1) */</span>
+  <span class="prp">color</span>: <span class="val">hsl(282, 100%, 38%)</span>;         <span class="cm">/* HSL: tono, saturación, luminosidad */</span>
+  <span class="prp">color</span>: <span class="val">hsla(282, 100%, 38%, 0.8)</span>;   <span class="cm">/* HSLA: igual + alfa */</span>
+
+  <span class="cm">/* Degradados */</span>
+  <span class="prp">background</span>: <span class="fn">linear-gradient</span>(<span class="val">135deg, #264de4, #8b00c4</span>);
+  <span class="prp">background</span>: <span class="fn">radial-gradient</span>(<span class="val">circle, #264de4, #0a0010</span>);
+}
+
+<span class="cm">/* ── Tipografía completa ── */</span>
+<span class="sel">p</span> {
+  <span class="cm">/* Fuente */</span>
+  <span class="prp">font-family</span>:  <span class="val">'Montserrat', Arial, sans-serif</span>; <span class="cm">/* con fallback */</span>
+  <span class="prp">font-size</span>:    <span class="val">1rem</span>;        <span class="cm">/* 1rem = 16px por defecto */</span>
+  <span class="prp">font-weight</span>:  <span class="val">400</span>;         <span class="cm">/* 100 (thin) → 900 (black) */</span>
+  <span class="prp">font-style</span>:   <span class="val">normal</span>;      <span class="cm">/* normal | italic | oblique */</span>
+
+  <span class="cm">/* Texto */</span>
+  <span class="prp">line-height</span>:     <span class="val">1.7</span>;       <span class="cm">/* Interlineado (sin unidad = relativo) */</span>
+  <span class="prp">letter-spacing</span>:  <span class="val">0.05em</span>;   <span class="cm">/* Espaciado entre letras */</span>
+  <span class="prp">word-spacing</span>:    <span class="val">0.1em</span>;    <span class="cm">/* Espaciado entre palabras */</span>
+  <span class="prp">text-align</span>:      <span class="val">left</span>;     <span class="cm">/* left | center | right | justify */</span>
+  <span class="prp">text-transform</span>:  <span class="val">uppercase</span>;<span class="cm">/* none | uppercase | lowercase | capitalize */</span>
+  <span class="prp">text-decoration</span>: <span class="val">none</span>;     <span class="cm">/* none | underline | line-through */</span>
+  <span class="prp">text-shadow</span>:     <span class="val">0 2px 8px rgba(139,0,196,0.5)</span>;
+}
+
+<span class="cm">/* ── Google Fonts (importar fuente externa) ── */</span>
+<span class="at">@import</span> <span class="val">url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap')</span>;
+<span class="cm">/* O en el HTML: &lt;link href="fonts.googleapis.com/..." rel="stylesheet"/&gt; */</span></pre>
+    </div>
+
+    <div class="demo-row">
+      <div class="demo-box">
+        <div class="demo-label">Hexadecimal</div>
+        <div class="demo-visual" style="background:#8b00c4;">#8b00c4</div>
+        El formato más común y compacto.
+      </div>
+      <div class="demo-box">
+        <div class="demo-label">RGBA</div>
+        <div class="demo-visual" style="background:rgba(41,101,241,0.6);border:1px solid rgba(41,101,241,.3);">rgba(41,101,241,0.6)</div>
+        Con canal de transparencia.
+      </div>
+      <div class="demo-box">
+        <div class="demo-label">Degradado lineal</div>
+        <div class="demo-visual" style="background:linear-gradient(135deg,#264de4,#8b00c4,#cc0022);">linear-gradient</div>
+        Transición entre colores.
+      </div>
+      <div class="demo-box">
+        <div class="demo-label">Degradado radial</div>
+        <div class="demo-visual" style="background:radial-gradient(circle,#c472f0,#080010);">radial-gradient</div>
+        Desde el centro hacia afuera.
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-divider"></div>
+
+  <!-- ── M5: Flexbox ── -->
+  <div id="m5" class="module">
+    <div class="module-header">
+      <div class="module-num">5</div>
+      <div class="module-title-wrap">
+        <h2>Flexbox</h2>
+        <p>Layout en una dimensión · Alineación · Distribución</p>
+      </div>
+    </div>
+
+    <p><strong>Flexbox (Flexible Box Layout)</strong> es el sistema de diseño más popular de CSS3 para organizar elementos en <strong>una sola dimensión</strong> (fila o columna). Resuelve de forma elegante problemas que antes requerían trucos complicados: centrar elementos vertical y horizontalmente, distribuir espacio entre items, hacer navbars, etc.</p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <div class="code-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div>
+        <span class="code-file">flexbox.css</span>
+      </div>
+      <pre><span class="cm">/* ── CONTENEDOR FLEX (el padre) ── */</span>
+<span class="sel">.contenedor</span> {
+  <span class="prp">display</span>:         <span class="val">flex</span>;             <span class="cm">/* Activa Flexbox */</span>
+  <span class="prp">flex-direction</span>:  <span class="val">row</span>;             <span class="cm">/* row | column | row-reverse | column-reverse */</span>
+  <span class="prp">flex-wrap</span>:       <span class="val">wrap</span>;            <span class="cm">/* nowrap | wrap | wrap-reverse */</span>
+  <span class="prp">justify-content</span>: <span class="val">space-between</span>;  <span class="cm">/* Distribución en el eje principal */</span>
+  <span class="cm">/*  flex-start | flex-end | center | space-between | space-around | space-evenly */</span>
+  <span class="prp">align-items</span>:     <span class="val">center</span>;         <span class="cm">/* Alineación en eje secundario */</span>
+  <span class="cm">/*  flex-start | flex-end | center | stretch | baseline */</span>
+  <span class="prp">gap</span>:             <span class="val">20px</span>;            <span class="cm">/* Espacio entre items (mejor que margin) */</span>
+}
+
+<span class="cm">/* ── ITEMS FLEX (los hijos) ── */</span>
+<span class="sel">.item</span> {
+  <span class="prp">flex</span>:       <span class="val">1</span>;        <span class="cm">/* Crecer y encoger proporcionalmente */</span>
+  <span class="prp">flex-grow</span>:  <span class="val">1</span>;        <span class="cm">/* Cuánto crece respecto a sus hermanos */</span>
+  <span class="prp">flex-shrink</span>:<span class="val">0</span>;        <span class="cm">/* 0 = no encoger nunca */</span>
+  <span class="prp">flex-basis</span>: <span class="val">200px</span>;   <span class="cm">/* Tamaño inicial antes de distribuir espacio */</span>
+  <span class="prp">align-self</span>: <span class="val">flex-end</span>;<span class="cm">/* Sobreescribe align-items solo para este item */</span>
+  <span class="prp">order</span>:      <span class="val">2</span>;        <span class="cm">/* Cambia el orden visual sin modificar el HTML */</span>
+}
+
+<span class="cm">/* ── Ejemplo: centrar perfectamente en pantalla ── */</span>
+<span class="sel">.centrado-perfecto</span> {
+  <span class="prp">display</span>:         <span class="val">flex</span>;
+  <span class="prp">align-items</span>:     <span class="val">center</span>;
+  <span class="prp">justify-content</span>: <span class="val">center</span>;
+  <span class="prp">min-height</span>:      <span class="val">100vh</span>;   <span class="cm">/* Ocupa toda la altura de la pantalla */</span>
+}
+
+<span class="cm">/* ── Ejemplo: navbar con logo y links ── */</span>
+<span class="sel">header</span> {
+  <span class="prp">display</span>:         <span class="val">flex</span>;
+  <span class="prp">justify-content</span>: <span class="val">space-between</span>;
+  <span class="prp">align-items</span>:     <span class="val">center</span>;
+  <span class="prp">padding</span>:         <span class="val">0 32px</span>;
+}</pre>
+    </div>
+
+    <div class="tip-box">
+      <div class="tip-icon">🎯</div>
+      <p><strong>Truco para memorizar:</strong> <code style="color:#60a5fa;font-family:'Fira Code',monospace;">justify-content</code> controla el eje <em>principal</em> (horizontal en <code style="color:#60a5fa;font-family:'Fira Code',monospace;">flex-direction: row</code>) y <code style="color:#60a5fa;font-family:'Fira Code',monospace;">align-items</code> controla el eje <em>secundario</em> (vertical). Para centrar algo total: <code style="color:#60a5fa;font-family:'Fira Code',monospace;">display:flex; justify-content:center; align-items:center</code>. ¡Tres líneas!</p>
+    </div>
+  </div>
+
+  <div class="sec-divider"></div>
+
+  <!-- ── M6: Grid ── -->
+  <div id="m6" class="module">
+    <div class="module-header">
+      <div class="module-num">6</div>
+      <div class="module-title-wrap">
+        <h2>CSS Grid</h2>
+        <p>Layout en dos dimensiones · Columnas · Filas · Áreas</p>
+      </div>
+    </div>
+
+    <p><strong>CSS Grid</strong> es el sistema de cuadrícula nativo de CSS3 para crear layouts en <strong>dos dimensiones</strong> (filas Y columnas simultáneamente). Es ideal para la estructura general de la página. Junto con Flexbox, forma el dúo perfecto para cualquier diseño.</p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <div class="code-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div>
+        <span class="code-file">grid.css</span>
+      </div>
+      <pre><span class="cm">/* ── CONTENEDOR GRID (el padre) ── */</span>
+<span class="sel">.cuadricula</span> {
+  <span class="prp">display</span>:               <span class="val">grid</span>;
+  <span class="prp">grid-template-columns</span>: <span class="val">repeat(3, 1fr)</span>;  <span class="cm">/* 3 columnas iguales */</span>
+  <span class="prp">grid-template-rows</span>:    <span class="val">auto</span>;
+  <span class="prp">gap</span>:                   <span class="val">24px</span>;           <span class="cm">/* Espacio entre celdas */</span>
+  <span class="prp">column-gap</span>:            <span class="val">20px</span>;          <span class="cm">/* Solo columnas */</span>
+  <span class="prp">row-gap</span>:               <span class="val">28px</span>;          <span class="cm">/* Solo filas */</span>
+}
+
+<span class="cm">/* ── Columnas con tamaños mixtos ── */</span>
+<span class="sel">.layout-pagina</span> {
+  <span class="prp">display</span>:               <span class="val">grid</span>;
+  <span class="prp">grid-template-columns</span>: <span class="val">280px 1fr</span>;    <span class="cm">/* Sidebar fija + contenido flexible */</span>
+}
+
+<span class="cm">/* ── Grid areas con nombres (el más legible) ── */</span>
+<span class="sel">.layout-completo</span> {
+  <span class="prp">display</span>:              <span class="val">grid</span>;
+  <span class="prp">grid-template-columns</span>:<span class="val">1fr 3fr 1fr</span>;
+  <span class="prp">grid-template-rows</span>:   <span class="val">80px 1fr 60px</span>;
+  <span class="prp">grid-template-areas</span>:
+    <span class="val">"header  header  header"</span>
+    <span class="val">"sidebar main    aside"</span>
+    <span class="val">"footer  footer  footer"</span>;
+  <span class="prp">min-height</span>: <span class="val">100vh</span>;
+}
+<span class="sel">header</span>  { <span class="prp">grid-area</span>: <span class="val">header</span>; }
+<span class="sel">nav</span>     { <span class="prp">grid-area</span>: <span class="val">sidebar</span>; }
+<span class="sel">main</span>    { <span class="prp">grid-area</span>: <span class="val">main</span>; }
+<span class="sel">aside</span>   { <span class="prp">grid-area</span>: <span class="val">aside</span>; }
+<span class="sel">footer</span>  { <span class="prp">grid-area</span>: <span class="val">footer</span>; }
+
+<span class="cm">/* ── Grid responsivo automático (muy poderoso) ── */</span>
+<span class="sel">.tarjetas</span> {
+  <span class="prp">display</span>:               <span class="val">grid</span>;
+  <span class="prp">grid-template-columns</span>: <span class="fn">repeat</span>(<span class="val">auto-fill, minmax(280px, 1fr)</span>);
+  <span class="prp">gap</span>:                   <span class="val">24px</span>;
+  <span class="cm">/* Crea automáticamente las columnas que quepan en pantalla */</span>
+}</pre>
+    </div>
+
+    <div class="good-box">
+      <div class="tip-icon">💡</div>
+      <p><strong>¿Cuándo usar Grid vs Flexbox?</strong> Usa <strong>Flexbox</strong> para componentes de una dimensión: navbars, filas de botones, cards horizontales. Usa <strong>Grid</strong> para la estructura general de la página: layout de columnas, cuadrículas de tarjetas, páginas completas. En la práctica, se usan juntos: Grid para la macro-estructura, Flexbox para el interior de cada componente.</p>
+    </div>
+  </div>
+
+  <div class="sec-divider"></div>
+
+  <!-- ── M7: Transiciones y Animaciones ── -->
+  <div id="m7" class="module">
+    <div class="module-header">
+      <div class="module-num">7</div>
+      <div class="module-title-wrap">
+        <h2>Transiciones y Animaciones</h2>
+        <p>transition · animation · @keyframes · transform</p>
+      </div>
+    </div>
+
+    <p>CSS3 introdujo animaciones y transiciones <strong>nativas sin JavaScript</strong>. Las <strong>transiciones</strong> animan el cambio entre dos estados (ej: hover), mientras que las <strong>animaciones con @keyframes</strong> permiten secuencias complejas con múltiples pasos.</p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <div class="code-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div>
+        <span class="code-file">animaciones.css</span>
+      </div>
+      <pre><span class="cm">/* ① TRANSITION: anima el cambio entre dos estados */</span>
+<span class="sel">.boton</span> {
+  <span class="prp">background</span>:  <span class="val">#264de4</span>;
+  <span class="prp">transform</span>:   <span class="val">translateY(0)</span>;
+  <span class="prp">box-shadow</span>:  <span class="val">none</span>;
+
+  <span class="cm">/* propiedad  duración  función    retardo */</span>
+  <span class="prp">transition</span>: <span class="val">all 0.3s ease 0s</span>;
+  <span class="cm">/* o múltiples propiedades: */</span>
+  <span class="prp">transition</span>: <span class="val">background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease</span>;
+}
+<span class="sel">.boton:hover</span> {
+  <span class="prp">background</span>: <span class="val">#8b00c4</span>;
+  <span class="prp">transform</span>:  <span class="val">translateY(-4px)</span>;
+  <span class="prp">box-shadow</span>: <span class="val">0 12px 30px rgba(139,0,196,0.45)</span>;
+}
+
+<span class="cm">/* ② TRANSFORM: transformaciones 2D y 3D */</span>
+<span class="sel">.transformaciones</span> {
+  <span class="prp">transform</span>: <span class="fn">translateX</span>(<span class="val">20px</span>);           <span class="cm">/* Mover horizontal */</span>
+  <span class="prp">transform</span>: <span class="fn">translateY</span>(<span class="val">-10px</span>);         <span class="cm">/* Mover vertical */</span>
+  <span class="prp">transform</span>: <span class="fn">scale</span>(<span class="val">1.05</span>);               <span class="cm">/* Escalar */</span>
+  <span class="prp">transform</span>: <span class="fn">rotate</span>(<span class="val">45deg</span>);             <span class="cm">/* Rotar */</span>
+  <span class="prp">transform</span>: <span class="fn">skew</span>(<span class="val">10deg, 0deg</span>);         <span class="cm">/* Sesgar */</span>
+  <span class="prp">transform</span>: <span class="fn">translate</span>(<span class="val">-50%, -50%</span>);    <span class="cm">/* Centrar absolutamente */</span>
+  <span class="cm">/* Combinar: */</span>
+  <span class="prp">transform</span>: <span class="fn">translateY</span>(<span class="val">-8px</span>) <span class="fn">scale</span>(<span class="val">1.02</span>);
+}
+
+<span class="cm">/* ③ @keyframes: animación con múltiples pasos */</span>
+<span class="at">@keyframes</span> <span class="fn">aparecer</span> {
+  <span class="num">0%</span>   { <span class="prp">opacity</span>: <span class="val">0</span>; <span class="prp">transform</span>: <span class="fn">translateY</span>(<span class="val">30px</span>); }
+  <span class="num">60%</span>  { <span class="prp">opacity</span>: <span class="val">1</span>; <span class="prp">transform</span>: <span class="fn">translateY</span>(<span class="val">-5px</span>); }
+  <span class="num">100%</span> { <span class="prp">opacity</span>: <span class="val">1</span>; <span class="prp">transform</span>: <span class="fn">translateY</span>(<span class="val">0</span>); }
+}
+
+<span class="sel">.animado</span> {
+  <span class="cm">/* nombre      duración  función  retardo  iteraciones  dirección   relleno */</span>
+  <span class="prp">animation</span>: <span class="val">aparecer 0.8s ease 0.2s 1 normal both</span>;
+}
+
+<span class="cm">/* Animación infinita (ej: loader o pulso) */</span>
+<span class="at">@keyframes</span> <span class="fn">pulso</span> {
+  <span class="num">0%</span>, <span class="num">100%</span> { <span class="prp">transform</span>: <span class="fn">scale</span>(<span class="val">1</span>);    <span class="prp">opacity</span>: <span class="val">1</span>; }
+  <span class="num">50%</span>      { <span class="prp">transform</span>: <span class="fn">scale</span>(<span class="val">1.1</span>);  <span class="prp">opacity</span>: <span class="val">0.7</span>; }
+}
+<span class="sel">.pulsando</span> { <span class="prp">animation</span>: <span class="val">pulso 2s ease-in-out infinite</span>; }</pre>
+    </div>
+  </div>
+
+  <div class="sec-divider"></div>
+
+  <!-- ── M8: Responsive Design ── -->
+  <div id="m8" class="module">
+    <div class="module-header">
+      <div class="module-num">8</div>
+      <div class="module-title-wrap">
+        <h2>Diseño Responsivo</h2>
+        <p>Media Queries · Unidades relativas · Mobile-first</p>
+      </div>
+    </div>
+
+    <p>El <strong>diseño responsivo</strong> hace que tu página se vea bien en cualquier dispositivo: teléfonos, tablets, laptops y monitores 4K. CSS3 lo hace posible con <strong>Media Queries</strong> y el uso de <strong>unidades relativas</strong>. El enfoque moderno es <em>Mobile-first</em>: diseña primero para móvil y luego expande para pantallas más grandes.</p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <div class="code-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div>
+        <span class="code-file">responsive.css</span>
+      </div>
+      <pre><span class="cm">/* ── Unidades relativas (siempre prefiere estas) ── */</span>
+<span class="sel">.elemento</span> {
+  <span class="prp">font-size</span>: <span class="val">1rem</span>;      <span class="cm">/* Relativo al font-size raíz (16px por defecto) */</span>
+  <span class="prp">font-size</span>: <span class="val">1.2em</span>;     <span class="cm">/* Relativo al font-size del padre */</span>
+  <span class="prp">width</span>:     <span class="val">80%</span>;       <span class="cm">/* Porcentaje del contenedor padre */</span>
+  <span class="prp">width</span>:     <span class="val">50vw</span>;      <span class="cm">/* 50% del ancho de la ventana (viewport width) */</span>
+  <span class="prp">height</span>:    <span class="val">100vh</span>;     <span class="cm">/* 100% del alto de la ventana (viewport height) */</span>
+  <span class="prp">padding</span>:   <span class="val">2rem</span>;      <span class="cm">/* 2 × 16px = 32px, se ajusta si cambia la raíz */</span>
+}
+
+<span class="cm">/* ── Tipografía fluida con clamp() ── */</span>
+<span class="sel">h1</span> {
+  <span class="cm">/* Mínimo, preferido, máximo → se adapta automáticamente */</span>
+  <span class="prp">font-size</span>: <span class="fn">clamp</span>(<span class="val">1.8rem, 5vw, 4rem</span>);
+}
+
+<span class="cm">/* ── MEDIA QUERIES (enfoque Mobile-first) ── */</span>
+
+<span class="cm">/* Estilos base: para móviles pequeños (320px en adelante) */</span>
+<span class="sel">.grid-tarjetas</span> {
+  <span class="prp">display</span>:               <span class="val">grid</span>;
+  <span class="prp">grid-template-columns</span>: <span class="val">1fr</span>;   <span class="cm">/* Una columna en móvil */</span>
+  <span class="prp">gap</span>:                   <span class="val">16px</span>;
+}
+
+<span class="cm">/* Tablet: 600px y más */</span>
+<span class="at">@media</span> (<span class="prp">min-width</span>: <span class="val">600px</span>) {
+  <span class="sel">.grid-tarjetas</span> {
+    <span class="prp">grid-template-columns</span>: <span class="val">repeat(2, 1fr)</span>; <span class="cm">/* 2 columnas */</span>
+  }
+  <span class="sel">.sidebar</span> { <span class="prp">display</span>: <span class="val">block</span>; } <span class="cm">/* Mostrar sidebar en tablet */</span>
+}
+
+<span class="cm">/* Desktop: 1024px y más */</span>
+<span class="at">@media</span> (<span class="prp">min-width</span>: <span class="val">1024px</span>) {
+  <span class="sel">.grid-tarjetas</span> {
+    <span class="prp">grid-template-columns</span>: <span class="val">repeat(3, 1fr)</span>; <span class="cm">/* 3 columnas */</span>
+  }
+}
+
+<span class="cm">/* Monitor grande: 1440px y más */</span>
+<span class="at">@media</span> (<span class="prp">min-width</span>: <span class="val">1440px</span>) {
+  <span class="sel">.contenedor</span> { <span class="prp">max-width</span>: <span class="val">1320px</span>; <span class="prp">margin</span>: <span class="val">0 auto</span>; }
+}
+
+<span class="cm">/* Modo oscuro automático del sistema */</span>
+<span class="at">@media</span> (<span class="prp">prefers-color-scheme</span>: <span class="val">dark</span>) {
+  <span class="sel">body</span> { <span class="prp">background</span>: <span class="val">#0a0010</span>; <span class="prp">color</span>: <span class="val">#fff</span>; }
+}</pre>
+    </div>
+
+    <div class="warn-box">
+      <div class="tip-icon">📱</div>
+      <p><strong>No olvides la meta viewport:</strong> Para que las Media Queries funcionen en dispositivos móviles reales, necesitas tener en el <code style="color:#fb923c;font-family:'Fira Code',monospace;">&lt;head&gt;</code> del HTML: <code style="color:#fb923c;font-family:'Fira Code',monospace;">&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"/&gt;</code>. Sin ella, el móvil simula una pantalla de escritorio y ignora tus Media Queries.</p>
+    </div>
+  </div>
+
+  <div class="sec-divider"></div>
+
+  <!-- ── M9: Variables y buenas prácticas ── -->
+  <div id="m9" class="module">
+    <div class="module-header">
+      <div class="module-num">9</div>
+      <div class="module-title-wrap">
+        <h2>Variables CSS y Buenas Prácticas</h2>
+        <p>Custom Properties · Organización · Código limpio</p>
+      </div>
+    </div>
+
+    <p>Las <strong>variables CSS (Custom Properties)</strong> son uno de los aportes más importantes de CSS moderno. Permiten definir valores reutilizables que puedes cambiar en un solo lugar y se actualizan en toda la página. Son la base de cualquier sistema de diseño o tema de colores.</p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <div class="code-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div>
+        <span class="code-file">variables-y-reset.css</span>
+      </div>
+      <pre><span class="cm">/* ── Variables globales en :root ── */</span>
+<span class="sel">:root</span> {
+  <span class="cm">/* Paleta de colores */</span>
+  <span class="prp">--color-primario</span>:  <span class="val">#264de4</span>;
+  <span class="prp">--color-acento</span>:    <span class="val">#8b00c4</span>;
+  <span class="prp">--color-texto</span>:     <span class="val">#ffffff</span>;
+  <span class="prp">--color-fondo</span>:     <span class="val">#060010</span>;
+  <span class="prp">--color-superficie</span>:<span class="val">rgba(255,255,255,0.05)</span>;
+
+  <span class="cm">/* Tipografía */</span>
+  <span class="prp">--fuente-principal</span>: <span class="val">'Montserrat', sans-serif</span>;
+  <span class="prp">--fuente-codigo</span>:    <span class="val">'Fira Code', monospace</span>;
+  <span class="prp">--tam-base</span>:         <span class="val">1rem</span>;
+
+  <span class="cm">/* Espaciado */</span>
+  <span class="prp">--espacio-sm</span>: <span class="val">8px</span>;
+  <span class="prp">--espacio-md</span>: <span class="val">16px</span>;
+  <span class="prp">--espacio-lg</span>: <span class="val">32px</span>;
+  <span class="prp">--espacio-xl</span>: <span class="val">64px</span>;
+
+  <span class="cm">/* Bordes y sombras */</span>
+  <span class="prp">--radio-sm</span>:  <span class="val">8px</span>;
+  <span class="prp">--radio-md</span>:  <span class="val">16px</span>;
+  <span class="prp">--radio-lg</span>:  <span class="val">24px</span>;
+  <span class="prp">--sombra</span>:    <span class="val">0 8px 32px rgba(0,0,0,0.3)</span>;
+  <span class="prp">--transicion</span>:<span class="val">all 0.3s ease</span>;
+}
+
+<span class="cm">/* ── Uso de variables ── */</span>
+<span class="sel">.tarjeta</span> {
+  <span class="prp">background</span>:    <span class="fn">var</span>(<span class="val">--color-superficie</span>);
+  <span class="prp">border-radius</span>: <span class="fn">var</span>(<span class="val">--radio-md</span>);
+  <span class="prp">padding</span>:       <span class="fn">var</span>(<span class="val">--espacio-lg</span>);
+  <span class="prp">box-shadow</span>:    <span class="fn">var</span>(<span class="val">--sombra</span>);
+  <span class="prp">transition</span>:    <span class="fn">var</span>(<span class="val">--transicion</span>);
+  <span class="prp">font-family</span>:   <span class="fn">var</span>(<span class="val">--fuente-principal</span>);
+}
+
+<span class="cm">/* ── Reset CSS moderno ── */</span>
+<span class="sel">*, *::before, *::after</span> {
+  <span class="prp">margin</span>:     <span class="val">0</span>;
+  <span class="prp">padding</span>:    <span class="val">0</span>;
+  <span class="prp">box-sizing</span>: <span class="val">border-box</span>;
+}
+<span class="sel">html</span> { <span class="prp">scroll-behavior</span>: <span class="val">smooth</span>; }
+<span class="sel">img</span>  { <span class="prp">max-width</span>: <span class="val">100%</span>; <span class="prp">display</span>: <span class="val">block</span>; }
+<span class="sel">a</span>    { <span class="prp">text-decoration</span>: <span class="val">none</span>; <span class="prp">color</span>: <span class="val">inherit</span>; }</pre>
+    </div>
+
+    <ul class="checklist">
+      <li><span class="check-icon">✅</span><div><strong>Define variables en :root.</strong> Concentra todos tus valores de color, tipografía y espaciado en variables. Si necesitas cambiar el color principal, solo modificas una línea.</div></li>
+      <li><span class="check-icon">✅</span><div><strong>Usa siempre un reset CSS.</strong> Los navegadores tienen estilos por defecto distintos entre sí. Un reset garantiza que tu página se vea igual en Chrome, Firefox, Safari y Edge.</div></li>
+      <li><span class="check-icon">✅</span><div><strong>Mobile-first siempre.</strong> Escribe los estilos base para móvil y usa <code style="color:#60a5fa;font-family:'Fira Code',monospace;">min-width</code> en tus Media Queries para escalar hacia pantallas grandes.</div></li>
+      <li><span class="check-icon">✅</span><div><strong>Prefiere clases sobre IDs para estilos.</strong> Los IDs tienen una especificidad muy alta que es difícil de sobreescribir. Reserva los IDs para anclas y JavaScript.</div></li>
+      <li><span class="check-icon">✅</span><div><strong>Organiza tu CSS en secciones.</strong> Usa comentarios para separar: Reset, Variables, Tipografía, Layout, Componentes, Animaciones, Media Queries. Tu yo del futuro te lo agradecerá.</div></li>
+      <li><span class="check-icon">✅</span><div><strong>Usa <code style="color:#60a5fa;font-family:'Fira Code',monospace;">gap</code> en lugar de margins.</strong> En Flexbox y Grid, <code style="color:#60a5fa;font-family:'Fira Code',monospace;">gap</code> es más predecible y limpio que usar <code style="color:#60a5fa;font-family:'Fira Code',monospace;">margin</code> en los elementos hijos.</div></li>
+      <li><span class="check-icon">✅</span><div><strong>Evita !important.</strong> Usar <code style="color:#fb923c;font-family:'Fira Code',monospace;">!important</code> es señal de que hay un problema de especificidad. Resuelve el problema en lugar de forzar el estilo.</div></li>
+      <li><span class="check-icon">✅</span><div><strong>Usa DevTools del navegador.</strong> Presiona <strong>F12</strong> en cualquier navegador y ve a la pestaña "Styles" para inspeccionar, modificar y experimentar con CSS en tiempo real sin tocar tu archivo.</div></li>
+    </ul>
+
+    <div class="tip-box">
+      <div class="tip-icon">📚</div>
+      <p><strong>Recursos recomendados:</strong> <code style="color:#60a5fa;font-family:'Fira Code',monospace;">developer.mozilla.org/es/docs/Web/CSS</code> (referencia oficial), <code style="color:#60a5fa;font-family:'Fira Code',monospace;">css-tricks.com</code> (guías y trucos), <code style="color:#60a5fa;font-family:'Fira Code',monospace;">flexboxfroggy.com</code> (juego para aprender Flexbox) y <code style="color:#60a5fa;font-family:'Fira Code',monospace;">cssgridgarden.com</code> (juego para aprender Grid). Todos gratuitos.</p>
+    </div>
+  </div>
+
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <p class="ft-school">Centro de Bachillerato Tecnologico Industrial y de Servicios 144</p>
+  <div class="ft-sep"></div>
+  <p class="ft-info">Especialidad: Inteligencia Artificial</p>
+  <p class="ft-name">Alumno: Joaquin Santos Gumeta</p>
+  <p class="ft-name">Profesor: Jordy Chirino Blacazar</p>
+  <p class="ft-info" style="font-size:.68rem;margin-top:2px;">Cultura Digital 2 · 2025</p>
+</footer>
+
+<script>
+  // Animated CSS property words in background
+  const props = ['color','background','font-size','display:flex','grid','margin','padding','border-radius','transform','transition','animation','opacity','box-shadow','position','z-index','overflow','@keyframes','linear-gradient','var(--color)','flex-wrap','align-items','justify-content','min-height','border:none','cursor:pointer'];
+  const container = document.getElementById('cssWords');
+  const count = Math.floor(window.innerWidth / 130);
+  for (let i = 0; i < count; i++) {
+    const el = document.createElement('div');
+    el.className = 'css-word';
+    el.textContent = props[Math.floor(Math.random() * props.length)];
+    el.style.left = (Math.random() * 95) + '%';
+    el.style.fontSize = (0.65 + Math.random() * 0.45) + 'rem';
+    el.style.animationDuration = (14 + Math.random() * 18) + 's';
+    el.style.animationDelay = (-Math.random() * 22) + 's';
+    container.appendChild(el);
+  }
+
+  // Progress nav dots
+  const dots = document.querySelectorAll('.pnav-dot');
+  const modules = document.querySelectorAll('[id^="m"]');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        dots.forEach(d => d.classList.remove('active'));
+        const idx = [...modules].indexOf(e.target);
+        if (dots[idx]) dots[idx].classList.add('active');
+      }
+    });
+  }, { threshold: 0.35 });
+  modules.forEach(m => obs.observe(m));
+</script>
+
+</body>
+</html>

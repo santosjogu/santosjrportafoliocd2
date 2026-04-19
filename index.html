@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Portafolio – Cultura Digital 2</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;900&family=Cormorant+Garamond:wght@700;900&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --purple:       #5b0080;
+      --purple-mid:   #8b00c4;
+      --purple-light: #c472f0;
+      --red:          #cc0022;
+      --red-mid:      #e8002a;
+      --red-light:    #ff4060;
+      --white:        #ffffff;
+    }
+
+    * { margin:0; padding:0; box-sizing:border-box; }
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: var(--white);
+      overflow-x: hidden;
+    }
+
+    /* ─────────────────────────────────────
+       PORTADA
+    ───────────────────────────────────── */
+    .cover {
+      min-height: 100vh;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 80px 24px 110px;
+      overflow: hidden;
+      background: linear-gradient(150deg,
+        #2d0040 0%,
+        #5b0080 22%,
+        #8b00c4 44%,
+        #aa0030 68%,
+        #cc0022 85%,
+        #ff2244 100%
+      );
+    }
+
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(90px);
+      pointer-events: none;
+    }
+    .b1 { width:520px; height:520px; background:#cc0022; opacity:.35; top:-140px; right:-100px; }
+    .b2 { width:420px; height:420px; background:#5b0080; opacity:.45; bottom:-100px; left:-90px; }
+    .b3 { width:320px; height:320px; background:#ffffff; opacity:.06; top:38%; left:50%; }
+
+    .stripe {
+      position: absolute;
+      width: 200%; height: 180px;
+      background: rgba(255,255,255,0.05);
+      top: 42%; left: -50%;
+      transform: rotate(-8deg);
+      pointer-events: none;
+    }
+
+    .ring {
+      position: absolute;
+      border-radius: 50%;
+      border: 1.5px solid rgba(255,255,255,0.12);
+      pointer-events: none;
+    }
+    .r1 { width:440px; height:440px; top:-120px; left:-120px; }
+    .r2 { width:260px; height:260px; top:0; left:0; }
+    .r3 { width:360px; height:360px; bottom:-80px; right:-80px; }
+
+    .cover-inner {
+      position: relative;
+      z-index: 2;
+      max-width: 700px;
+    }
+
+    .tag-small {
+      display: inline-block;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.5em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.8);
+      border: 1px solid rgba(255,255,255,0.3);
+      background: rgba(255,255,255,0.08);
+      padding: 6px 22px;
+      border-radius: 50px;
+      margin-bottom: 20px;
+      animation: up .8s ease both;
+    }
+
+    .cover-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(3.2rem, 9.5vw, 7rem);
+      font-weight: 900;
+      line-height: 1;
+      color: var(--white);
+      text-shadow: 0 0 60px rgba(204,0,34,.6), 0 4px 24px rgba(0,0,0,.4);
+      animation: up .8s ease .12s both;
+    }
+
+    .cover-specialty {
+      margin-top: 18px;
+      font-size: clamp(.9rem, 2.2vw, 1.15rem);
+      font-weight: 600;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.9);
+      animation: up .8s ease .24s both;
+    }
+    .cover-specialty span { color: #ffb3bf; }
+
+    .by-line {
+      margin-top: 12px;
+      font-size: .82rem;
+      font-weight: 300;
+      letter-spacing: .18em;
+      color: rgba(255,255,255,.6);
+      animation: up .8s ease .34s both;
+    }
+
+    .h-rule {
+      width: 56px; height: 2px;
+      border-radius: 2px;
+      background: linear-gradient(90deg, var(--purple-light), var(--red-light));
+      margin: 28px auto;
+      animation: up .8s ease .44s both;
+    }
+
+    .socials {
+      display: flex;
+      justify-content: center;
+      gap: 18px;
+      flex-wrap: wrap;
+      animation: up .8s ease .54s both;
+    }
+
+    .soc-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--white);
+      font-size: .82rem;
+      font-weight: 600;
+      letter-spacing: .08em;
+      padding: 12px 28px;
+      border-radius: 50px;
+      border: 1.5px solid rgba(255,255,255,.35);
+      background: rgba(255,255,255,.1);
+      backdrop-filter: blur(8px);
+      transition: all .3s ease;
+    }
+    .soc-btn:hover {
+      background: rgba(255,255,255,.22);
+      border-color: rgba(255,255,255,.7);
+      transform: translateY(-4px);
+      box-shadow: 0 10px 28px rgba(0,0,0,.25);
+    }
+    .soc-btn svg { width:18px; height:18px; fill:white; flex-shrink:0; }
+
+    .scroll-hint {
+      position: absolute;
+      bottom: 32px; left: 50%;
+      transform: translateX(-50%);
+      z-index: 2;
+      color: rgba(255,255,255,.4);
+      font-size: .6rem;
+      letter-spacing: .3em;
+      display: flex; flex-direction: column; align-items: center; gap:6px;
+      animation: bob 2.4s ease-in-out infinite;
+    }
+    .scroll-hint svg {
+      width:22px; height:22px;
+      stroke: rgba(255,255,255,.4);
+      fill: none; stroke-width:2;
+      stroke-linecap:round; stroke-linejoin:round;
+    }
+
+    /* ─────────────────────────────────────
+       CARDS SECTION
+    ───────────────────────────────────── */
+    .cards-section {
+      padding: 76px 6% 88px;
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(155deg,
+        #1a0028 0%,
+        #3a0055 28%,
+        #6b0095 52%,
+        #8c0018 76%,
+        #aa001e 100%
+      );
+    }
+
+    .cards-section::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 15% 50%, rgba(139,0,196,.3), transparent 55%),
+        radial-gradient(ellipse at 85% 50%, rgba(204,0,34,.3), transparent 55%);
+      pointer-events: none;
+    }
+
+    .sec-head {
+      text-align: center;
+      margin-bottom: 52px;
+      position: relative;
+      z-index: 1;
+    }
+    .sec-head h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.8rem, 4.5vw, 2.8rem);
+      font-weight: 900;
+      color: var(--white);
+      text-shadow: 0 2px 20px rgba(0,0,0,.4);
+    }
+    .sec-head p {
+      font-size: .78rem;
+      letter-spacing: .2em;
+      color: rgba(255,255,255,.5);
+      margin-top: 8px;
+      text-transform: uppercase;
+    }
+    .sec-head::after {
+      content:'';
+      display:block;
+      width:60px; height:3px;
+      border-radius:2px;
+      background: linear-gradient(90deg, var(--purple-light), var(--red-light));
+      margin: 16px auto 0;
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+      gap: 26px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .card {
+      background: var(--white);
+      border-radius: 18px;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      box-shadow: 0 6px 32px rgba(0,0,0,.25);
+      position: relative;
+      overflow: hidden;
+      transition: transform .3s ease, box-shadow .3s ease;
+    }
+    .card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 52px rgba(0,0,0,.35);
+    }
+
+    /* ── Image half ── */
+    .card-img {
+      width: 100%;
+      height: 180px;
+      display: block;
+      flex-shrink: 0;
+    }
+
+    /* ── Gradient overlay on image bottom edge ── */
+    .card-img-wrap {
+      background-color: red;
+      position: relative;
+      flex-shrink: 0;
+    }
+    .card-img-wrap::after {
+      content:'';
+      position: absolute;
+      bottom:0; left:0; right:0;
+      height: 56px;
+      background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.95));
+      pointer-events: none;
+    }
+
+    /* ── Content half ── */
+    .card-body {
+      padding: 20px 22px 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex: 1;
+    }
+
+    .card-tag {
+      font-size: .65rem;
+      font-weight: 700;
+      letter-spacing: .32em;
+      text-transform: uppercase;
+      background: linear-gradient(90deg, var(--purple-mid), var(--red-mid));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .card-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.18rem;
+      font-weight: 700;
+      color: #111;
+      line-height: 1.3;
+    }
+
+    .card-desc {
+      font-size: .8rem;
+      color: #555;
+      line-height: 1.7;
+      flex: 1;
+    }
+
+    .btn-ver {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 11px 26px;
+      background: linear-gradient(135deg, #8b00c4, #cc0022);
+      color: var(--white);
+      font-family: 'Montserrat', sans-serif;
+      font-size: .74rem;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      border: none;
+      border-radius: 50px;
+      text-decoration: none;
+      text-align: center;
+      cursor: pointer;
+      transition: all .3s ease;
+      box-shadow: 0 4px 18px rgba(140,0,20,.35);
+    }
+    .btn-ver:hover {
+      filter: brightness(1.15);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(140,0,20,.5);
+    }
+
+    /* ─────────────────────────────────────
+       FOOTER
+    ───────────────────────────────────── */
+    footer {
+      background: #0d0012;
+      border-top: 3px solid;
+      border-image: linear-gradient(90deg, #8b00c4, #cc0022) 1;
+      padding: 44px 6%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      text-align: center;
+    }
+
+    .ft-school {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.5rem;
+      font-weight: 900;
+      letter-spacing: .12em;
+      color: var(--white);
+    }
+
+    .ft-sep {
+      width: 48px; height: 1px;
+      background: rgba(255,255,255,.2);
+    }
+
+    .ft-info {
+      font-size: .76rem;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.5);
+    }
+
+    .ft-name {
+      font-size: .84rem;
+      font-weight: 600;
+      letter-spacing: .14em;
+      color: var(--purple-light);
+    }
+
+    /* ─────────────────────────────────────
+       ANIMATIONS
+    ───────────────────────────────────── */
+    @keyframes up {
+      from { opacity:0; transform:translateY(26px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+    @keyframes bob {
+      0%,100% { transform:translateX(-50%) translateY(0); }
+      50%      { transform:translateX(-50%) translateY(9px); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════ PORTADA ══════════════ -->
+<section class="cover">
+  <div class="blob b1"></div>
+  <div class="blob b2"></div>
+  <div class="blob b3"></div>
+  <div class="stripe"></div>
+  <div class="ring r1"></div>
+  <div class="ring r2"></div>
+  <div class="ring r3"></div>
+
+  <div class="cover-inner">
+    <span class="tag-small">Portafolio</span>
+
+    <h1 class="cover-title">Cultura Digital 2</h1>
+
+    <p class="cover-specialty">Especialidad: <span>Inteligencia Artificial</span></p>
+
+    <p class="by-line">by Joaquin Santos</p>
+
+    <div class="h-rule"></div>
+
+    <div class="socials">
+      <a target="_blank" href="https://www.facebook.com/joaquinsantos.dev" class="soc-btn">
+        <svg viewBox="0 0 24 24"><path d="M22 12c0-5.522-4.477-10-10-10S2 6.478 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987H7.898v-2.89h2.54V9.845c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/></svg>
+        Facebook
+      </a>
+      <a target="_blank" href="https://www.instagram.com/https_santosjr" class="soc-btn">
+        <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.366.062 2.633.336 3.608 1.311.975.975 1.249 2.242 1.311 3.608.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.062 1.366-.336 2.633-1.311 3.608-.975.975-2.242 1.249-3.608 1.311-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-1.366-.062-2.633-.336-3.608-1.311-.975-.975-1.249-2.242-1.311-3.608C2.175 15.747 2.163 15.367 2.163 12s.012-3.584.07-4.85c.062-1.366.336-2.633 1.311-3.608.975-.975 2.242-1.249 3.608-1.311C8.416 2.175 8.796 2.163 12 2.163zm0-2.163C8.741 0 8.333.014 7.053.072 5.775.131 4.602.425 3.635 1.392 2.668 2.359 2.374 3.532 2.315 4.81 2.257 6.09 2.243 6.498 2.243 12s.014 5.91.072 7.19c.059 1.278.353 2.451 1.32 3.418.967.967 2.14 1.261 3.418 1.32 1.28.058 1.688.072 7.19.072s5.91-.014 7.19-.072c1.278-.059 2.451-.353 3.418-1.32.967-.967 1.261-2.14 1.32-3.418.058-1.28.072-1.688.072-7.19s-.014-5.91-.072-7.19c-.059-1.278-.353-2.451-1.32-3.418-.967-.967-2.14-1.261-3.418-1.32C16.91.014 16.502 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zm0 10.162a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+        Instagram
+      </a>
+    </div>
+  </div>
+
+  <div class="scroll-hint">
+    SCROLL
+    <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+  </div>
+</section>
+
+<!-- ══════════════ CARDS ══════════════ -->
+<section class="cards-section">
+  <div class="sec-head">
+    <h2>Mis Tareas</h2>
+    <p>Cultura Digital 2 · Inteligencia Artificial</p>
+  </div>
+
+  <div class="cards-grid">
+
+    <!-- TAREA 01 · Introducción a la IA -->
+    <div class="card">
+      <div class="card-img-wrap">
+        <img src="Imagenes/Tim.jpeg" width="100%" height="90%">
+      </div>
+      <div class="card-body">
+        <span class="card-tag">Tarea 01</span>
+        <h3 class="card-title">El padre del internet</h3>
+        <p class="card-desc">Tem Berners Lee es considerado el padre del internet, creador de la www.</p>
+        <a href="tarea01.html" class="btn-ver">Ver tarea</a>
+      </div>
+    </div>
+
+    <!-- TAREA 02 · Redes Neuronales -->
+    <div class="card">
+      <div class="card-img-wrap">
+        <img src="Imagenes/lenguajes.jpeg" width="100%" height="90%">
+      </div>
+      <div class="card-body">
+        <span class="card-tag">Tarea 02</span>
+        <h3 class="card-title">Lenguajes de diseño y programación.</h3>
+        <p class="card-desc">Existen diferentes leguajes, cada uno con un enfoque especifico, existen lenguajes de diseño y maquetacion y lenguajes de programacion.</p>
+        <a href="tarea02.html" class="btn-ver">Ver tarea</a>
+      </div>
+    </div>
+
+    <!-- TAREA 03 · Machine Learning -->
+    <div class="card">
+      <div class="card-img-wrap">
+        <img src="Imagenes/html5.jpeg" width="100%" height="90%">
+      </div>
+      <div class="card-body">
+        <span class="card-tag">Tarea 03</span>
+        <h3 class="card-title">Guia para aprender html5</h3>
+        <p class="card-desc">Esta es una actividad en la cual aprenderemos a usar de manera correcta hmtl5, que ya es un html mas complejo, el cual requiere saber bien su funcionamiento.</p>
+        <a href="tarea03.html" class="btn-ver">Ver tarea</a>
+      </div>
+    </div>
+
+    <!-- TAREA 04 · Procesamiento de Lenguaje -->
+    <div class="card">
+      <div class="card-img-wrap">
+        <img src="Imagenes/css3.jpeg" width="100%" height="90%">
+      </div>
+      <div class="card-body">
+        <span class="card-tag">Tarea 04</span>
+        <h3 class="card-title">Guia para aprender css3</h3>
+        <p class="card-desc">Actividad en la cual aprenderemos a usar css3 de manera correcta, que es uno de los codigos mas complejos, por lo cual tu trabajo sale de manera extraordinaria, limpia y bien diseñada, por eso mismo es importante aprenderla a usar.</p>
+        <a href="tarea04.html" class="btn-ver">Ver tarea</a>
+      </div>
+    </div>
+
+    <!-- TAREA 05 · Visión por Computadora -->
+    <div class="card">
+      <div class="card-img-wrap">
+        <svg class="card-img" viewBox="0 0 600 180" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="g5a" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#0a001a"/>
+              <stop offset="100%" stop-color="#2d0050"/>
+            </linearGradient>
+          </defs>
+          <rect width="600" height="180" fill="url(#g5a)"/>
+          <!-- Camera / eye frame -->
+          <g transform="translate(300,85)">
+            <!-- Outer frame -->
+            <rect x="-90" y="-55" width="180" height="110" rx="8" fill="none" stroke="#c472f0" stroke-width="2"/>
+            <!-- Corner brackets -->
+            <g stroke="#ff4060" stroke-width="2.5" fill="none">
+              <polyline points="-90,-55 -90,-35 -70,-35"/>
+              <polyline points="90,-55 90,-35 70,-35"/>
+              <polyline points="-90,55 -90,35 -70,35"/>
+              <polyline points="90,55 90,35 70,35"/>
+            </g>
+            <!-- Iris -->
+            <circle cx="0" cy="0" r="36" fill="none" stroke="#c472f0" stroke-width="1.5" opacity=".6"/>
+            <circle cx="0" cy="0" r="26" fill="none" stroke="#c472f0" stroke-width="2" opacity=".8"/>
+            <circle cx="0" cy="0" r="14" fill="#8b00c4" opacity=".9"/>
+            <circle cx="0" cy="0" r="7"  fill="#cc0022"/>
+            <!-- Scan line -->
+            <line x1="-90" y1="-10" x2="90" y2="-10" stroke="#ff406040" stroke-width="1.5" stroke-dasharray="4,4"/>
+            <!-- Detection box (face) -->
+            <rect x="-38" y="-38" width="76" height="76" rx="4" fill="none" stroke="#ff4060" stroke-width="1.5" stroke-dasharray="6,3" opacity=".7"/>
+          </g>
+          <!-- Grid overlay -->
+          <g stroke="#ffffff08" stroke-width="1">
+            <line x1="0" y1="0" x2="0" y2="180"/><line x1="60" y1="0" x2="60" y2="180"/>
+            <line x1="120" y1="0" x2="120" y2="180"/><line x1="180" y1="0" x2="180" y2="180"/>
+            <line x1="240" y1="0" x2="240" y2="180"/><line x1="360" y1="0" x2="360" y2="180"/>
+            <line x1="420" y1="0" x2="420" y2="180"/><line x1="480" y1="0" x2="480" y2="180"/>
+            <line x1="540" y1="0" x2="540" y2="180"/>
+            <line x1="0" y1="45" x2="600" y2="45"/><line x1="0" y1="90" x2="600" y2="90"/>
+            <line x1="0" y1="135" x2="600" y2="135"/>
+          </g>
+          <!-- Side labels -->
+          <text x="72" y="88" font-family="monospace" font-size="8" fill="#c472f060">DETECT</text>
+          <text x="455" y="88" font-family="monospace" font-size="8" fill="#ff406060">CLASSIFY</text>
+          <text x="300" y="172" text-anchor="middle" font-family="monospace" font-size="9" fill="#c472f070" letter-spacing="4">COMPUTER VISION</text>
+        </svg>
+      </div>
+      <div class="card-body">
+        <span class="card-tag">Tarea 05</span>
+        <h3 class="card-title">Visión por Computadora</h3>
+        <p class="card-desc">Técnicas para que las máquinas interpreten y analicen imágenes y video en tiempo real.</p>
+        <a href="#" class="btn-ver">Ver tarea</a>
+      </div>
+    </div>
+
+    <!-- TAREA 06 · Ética en la IA -->
+    <div class="card">
+      <div class="card-img-wrap">
+        <svg class="card-img" viewBox="0 0 600 180" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="g6a" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#0d0010"/>
+              <stop offset="100%" stop-color="#3a0040"/>
+            </linearGradient>
+          </defs>
+          <rect width="600" height="180" fill="url(#g6a)"/>
+          <!-- Balance / scale -->
+          <g transform="translate(300,82)">
+            <!-- Central pole -->
+            <line x1="0" y1="-60" x2="0" y2="55" stroke="#c472f0" stroke-width="3"/>
+            <circle cx="0" cy="-60" r="6" fill="#c472f0"/>
+            <!-- Beam (slightly tilted) -->
+            <line x1="-100" y1="-20" x2="100" y2="-28" stroke="#c472f0" stroke-width="2.5"/>
+            <!-- Left pan -->
+            <line x1="-100" y1="-20" x2="-100" y2="10" stroke="#c472f0" stroke-width="1.5"/>
+            <line x1="-100" y1="-20" x2="-120" y2="10" stroke="#c472f0" stroke-width="1.5"/>
+            <line x1="-100" y1="-20" x2="-80" y2="10" stroke="#c472f0" stroke-width="1.5"/>
+            <path d="M-125,10 Q-100,22 -75,10" fill="none" stroke="#c472f0" stroke-width="2"/>
+            <!-- Human icon on left pan -->
+            <circle cx="-100" cy="-4" r="7" fill="#c472f0" opacity=".8"/>
+            <line x1="-100" y1="3" x2="-100" y2="16" stroke="#c472f0" stroke-width="2" opacity=".8"/>
+            <!-- Right pan -->
+            <line x1="100" y1="-28" x2="100" y2="2" stroke="#ff4060" stroke-width="1.5"/>
+            <line x1="100" y1="-28" x2="120" y2="2" stroke="#ff4060" stroke-width="1.5"/>
+            <line x1="100" y1="-28" x2="80" y2="2" stroke="#ff4060" stroke-width="1.5"/>
+            <path d="M75,2 Q100,14 125,2" fill="none" stroke="#ff4060" stroke-width="2"/>
+            <!-- Gear icon on right pan -->
+            <circle cx="100" cy="-12" r="9" fill="none" stroke="#ff4060" stroke-width="2" opacity=".8"/>
+            <circle cx="100" cy="-12" r="4" fill="#ff4060" opacity=".7"/>
+            <!-- Base -->
+            <rect x="-30" y="54" width="60" height="8" rx="4" fill="#c472f080"/>
+            <!-- Stars / sparkles -->
+            <text x="-150" y="-35" font-size="14" fill="#c472f0" opacity=".5">⚖</text>
+            <text x="130" y="-42" font-size="10" fill="#ff4060" opacity=".5">✦</text>
+          </g>
+          <!-- Side text -->
+          <text x="95" y="105" text-anchor="middle" font-family="monospace" font-size="9" fill="#c472f070">HUMANO</text>
+          <text x="505" y="98" text-anchor="middle" font-family="monospace" font-size="9" fill="#ff406070">MÁQUINA</text>
+          <text x="300" y="172" text-anchor="middle" font-family="monospace" font-size="9" fill="#c472f070" letter-spacing="4">AI ETHICS</text>
+        </svg>
+      </div>
+      <div class="card-body">
+        <span class="card-tag">Tarea 06</span>
+        <h3 class="card-title">Ética en la IA</h3>
+        <p class="card-desc">Implicaciones éticas, sesgos algorítmicos y responsabilidad en el desarrollo de IA.</p>
+        <a href="#" class="btn-ver">Ver tarea</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════ FOOTER ══════════════ -->
+<footer>
+  <p class="ft-school">Centro de Bachillerato Tecnologico Industrial y de Servicios 144</p>
+  <div class="ft-sep"></div>
+  <p class="ft-info">Especialidad: Inteligencia Artificial</p>
+  <p class="ft-name">Alumno: Joaquin Santos Gumeta</p>
+  <p class="ft-name">Profesor: Jordy Chirino Balcazar</p>
+  <p class="ft-info" style="font-size:.68rem; margin-top:2px;">Cultura Digital 2 · 2026</p>
+</footer>
+
+</body>
+</html>

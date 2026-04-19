@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Guía HTML5 – Tarea 03</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;900&family=Cormorant+Garamond:wght@400;700;900&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --purple:       #5b0080;
+      --purple-mid:   #8b00c4;
+      --purple-light: #c472f0;
+      --red:          #cc0022;
+      --red-light:    #ff4060;
+      --orange:       #e44d26;
+      --white:        #ffffff;
+      --bg:           #080010;
+      --surface:      rgba(255,255,255,0.04);
+      --border:       rgba(255,255,255,0.08);
+    }
+
+    * { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+
+    body {
+      font-family:'Montserrat', sans-serif;
+      background: var(--bg);
+      color: var(--white);
+      overflow-x: hidden;
+    }
+
+    /* ══ BACK BUTTON ══ */
+    .back-btn {
+      position:fixed; top:22px; left:22px; z-index:100;
+      display:flex; align-items:center; gap:8px;
+      text-decoration:none; color:var(--white);
+      font-size:.76rem; font-weight:700; letter-spacing:.12em;
+      text-transform:uppercase;
+      padding:10px 20px 10px 14px; border-radius:50px;
+      border:1.5px solid rgba(255,255,255,.22);
+      background:rgba(8,0,16,.7); backdrop-filter:blur(10px);
+      transition:all .3s ease;
+    }
+    .back-btn:hover {
+      background:rgba(139,0,196,.35);
+      border-color:var(--purple-light);
+      transform:translateX(-3px);
+      box-shadow:0 6px 24px rgba(139,0,196,.4);
+    }
+    .back-btn svg { width:16px;height:16px;stroke:white;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round; }
+
+    /* ══ PROGRESS NAV ══ */
+    .progress-nav {
+      position:fixed; right:22px; top:50%; transform:translateY(-50%);
+      z-index:90; display:flex; flex-direction:column; gap:10px;
+    }
+    .pnav-dot {
+      width:10px; height:10px; border-radius:50%;
+      background:rgba(255,255,255,.2); border:1.5px solid rgba(255,255,255,.3);
+      cursor:pointer; transition:all .3s ease; position:relative;
+      text-decoration:none; display:block;
+    }
+    .pnav-dot:hover, .pnav-dot.active {
+      background:var(--purple-light);
+      border-color:var(--purple-light);
+      box-shadow:0 0 10px var(--purple-light);
+    }
+    .pnav-dot::before {
+      content:attr(data-label);
+      position:absolute; right:18px; top:50%; transform:translateY(-50%);
+      background:rgba(8,0,16,.9); color:white;
+      font-size:.62rem; font-weight:600; letter-spacing:.1em;
+      padding:4px 10px; border-radius:20px; white-space:nowrap;
+      opacity:0; transition:opacity .2s ease; pointer-events:none;
+      border:1px solid rgba(255,255,255,.1);
+    }
+    .pnav-dot:hover::before { opacity:1; }
+    @media(max-width:768px){ .progress-nav{ display:none; } }
+
+    /* ══ HERO ══ */
+    .hero {
+      min-height:100vh; position:relative;
+      display:flex; align-items:center; justify-content:flex-start;
+      padding:100px 6% 90px; overflow:hidden;
+    }
+    .hero-bg {
+      position:absolute; inset:0;
+      background:linear-gradient(135deg,
+        #050008 0%, #1a0030 20%,
+        #3a0055 40%, #5b0080 58%,
+        #8a2000 75%, #cc3300 88%, #e44d26 100%
+      );
+    }
+    /* HTML5 badge watermark */
+    .hero-watermark {
+      position:absolute; right:-40px; top:50%; transform:translateY(-50%);
+      font-size:clamp(14rem,30vw,26rem);
+      font-family:'Cormorant Garamond',serif; font-weight:900;
+      color:rgba(228,77,38,0.07); line-height:1; user-select:none;
+      pointer-events:none; letter-spacing:-.05em;
+    }
+    /* Floating tags deco */
+    .float-tags {
+      position:absolute; inset:0; pointer-events:none; overflow:hidden;
+    }
+    .ftag {
+      position:absolute;
+      font-family:'Fira Code',monospace;
+      color:rgba(196,114,240,0.12);
+      font-size:.85rem; white-space:nowrap;
+      animation:floatUp linear infinite;
+    }
+    @keyframes floatUp {
+      from { transform:translateY(110vh) rotate(-8deg); opacity:0; }
+      10%  { opacity:1; }
+      90%  { opacity:1; }
+      to   { transform:translateY(-20vh) rotate(-8deg); opacity:0; }
+    }
+    .hblob {
+      position:absolute;border-radius:50%;filter:blur(100px);pointer-events:none;
+    }
+    .hb1{width:500px;height:500px;background:#e44d26;opacity:.18;top:-80px;right:-40px;}
+    .hb2{width:380px;height:380px;background:#5b0080;opacity:.35;bottom:-60px;left:-60px;}
+
+    .hero-inner { position:relative;z-index:2; max-width:680px; }
+
+    .hero-badge {
+      display:inline-flex;align-items:center;gap:8px;
+      font-size:.68rem;font-weight:700;letter-spacing:.4em;
+      text-transform:uppercase;color:rgba(255,255,255,.75);
+      border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.07);
+      padding:6px 18px;border-radius:50px;margin-bottom:22px;
+      animation:fadeUp .8s ease both;
+    }
+    .hero-badge span{width:6px;height:6px;border-radius:50%;background:#e44d26;animation:blink 1.5s ease infinite;}
+
+    .hero-title {
+      font-family:'Cormorant Garamond',serif;
+      font-size:clamp(3rem,9vw,6.5rem);font-weight:900;line-height:1;
+      color:var(--white);text-shadow:0 0 80px rgba(228,77,38,.5);
+      animation:fadeUp .8s ease .1s both;
+    }
+    .hero-title em {
+      font-style:normal;
+      background:linear-gradient(90deg,#f97316,#e44d26,#c472f0);
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+    }
+    .hero-sub {
+      margin-top:16px;font-size:clamp(.85rem,2vw,1rem);font-weight:300;
+      color:rgba(255,255,255,.6);line-height:1.75;max-width:520px;
+      animation:fadeUp .8s ease .2s both;
+    }
+
+    /* Quick-jump pills */
+    .hero-jumps {
+      display:flex;flex-wrap:wrap;gap:10px;margin-top:30px;
+      animation:fadeUp .8s ease .3s both;
+    }
+    .jump-pill {
+      padding:7px 16px;border-radius:50px;text-decoration:none;
+      font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+      border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.07);
+      color:rgba(255,255,255,.7);transition:all .25s ease;
+    }
+    .jump-pill:hover{background:rgba(228,77,38,.25);border-color:rgba(228,77,38,.5);color:#fff;transform:translateY(-2px);}
+
+    .hero-line{position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(228,77,38,.4),rgba(196,114,240,.4),transparent);}
+
+    /* ══ MAIN CONTENT ══ */
+    .content { max-width:920px; margin:0 auto; padding:80px 5% 100px; }
+
+    /* ── Module block ── */
+    .module {
+      margin-bottom:70px;
+      animation:fadeUp .6s ease both;
+    }
+
+    /* Module header */
+    .module-header {
+      display:flex;align-items:flex-start;gap:18px;margin-bottom:32px;
+      padding-bottom:20px;
+      border-bottom:1px solid var(--border);
+    }
+    .module-num {
+      flex-shrink:0;
+      width:54px;height:54px;border-radius:16px;
+      display:flex;align-items:center;justify-content:center;
+      font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:900;
+      background:linear-gradient(135deg,var(--purple-mid),var(--red));
+      color:white;
+    }
+    .module-title-wrap h2 {
+      font-family:'Cormorant Garamond',serif;
+      font-size:clamp(1.5rem,3.5vw,2rem);font-weight:900;color:var(--white);line-height:1.1;
+    }
+    .module-title-wrap p {
+      font-size:.75rem;letter-spacing:.2em;color:rgba(255,255,255,.4);
+      text-transform:uppercase;margin-top:5px;
+    }
+
+    /* Info paragraph */
+    .module p {
+      font-size:.875rem;line-height:1.9;color:rgba(255,255,255,.67);margin-bottom:18px;
+    }
+    .module p strong { color:var(--white); }
+    .module p a { color:var(--purple-light);text-decoration:none;border-bottom:1px solid rgba(196,114,240,.3); }
+
+    /* ── Tip box ── */
+    .tip-box {
+      display:flex;gap:14px;
+      padding:18px 20px;border-radius:14px;
+      background:rgba(196,114,240,.08);
+      border:1px solid rgba(196,114,240,.2);
+      margin:22px 0;
+    }
+    .tip-icon{font-size:1.3rem;flex-shrink:0;margin-top:1px;}
+    .tip-box p{margin:0;font-size:.82rem;line-height:1.7;color:rgba(255,255,255,.7);}
+    .tip-box p strong{color:var(--purple-light);}
+
+    .warn-box {
+      display:flex;gap:14px;
+      padding:18px 20px;border-radius:14px;
+      background:rgba(228,77,38,.08);
+      border:1px solid rgba(228,77,38,.25);
+      margin:22px 0;
+    }
+    .warn-box p{margin:0;font-size:.82rem;line-height:1.7;color:rgba(255,255,255,.7);}
+    .warn-box p strong{color:#fb923c;}
+
+    /* ── Code block ── */
+    .code-block {
+      border-radius:16px;overflow:hidden;
+      border:1px solid var(--border);margin:22px 0;
+    }
+    .code-header {
+      display:flex;align-items:center;justify-content:space-between;
+      padding:10px 18px;background:rgba(255,255,255,.04);
+      border-bottom:1px solid var(--border);
+    }
+    .code-dots{display:flex;gap:6px;}
+    .code-dots span{width:10px;height:10px;border-radius:50%;}
+    .dot-r{background:#ff5f57;} .dot-y{background:#febc2e;} .dot-g{background:#28c840;}
+    .code-file{font-family:'Fira Code',monospace;font-size:.68rem;color:rgba(255,255,255,.3);letter-spacing:.1em;}
+    pre {
+      font-family:'Fira Code',monospace;font-size:.79rem;line-height:1.85;
+      padding:20px 22px;overflow-x:auto;
+      background:rgba(0,0,0,.35);color:rgba(255,255,255,.85);
+    }
+    .tag  {color:#f87171;}
+    .atr  {color:#60a5fa;}
+    .val  {color:#86efac;}
+    .cm   {color:#6b7280;font-style:italic;}
+    .txt  {color:#e5e7eb;}
+    .kw   {color:#c472f0;}
+
+    /* ── Step list ── */
+    .step-list { list-style:none; margin:22px 0; }
+    .step-list li {
+      display:flex;align-items:flex-start;gap:14px;
+      padding:14px 0;border-bottom:1px solid var(--border);
+      font-size:.84rem;color:rgba(255,255,255,.7);line-height:1.65;
+    }
+    .step-list li:last-child{border-bottom:none;}
+    .step-num {
+      flex-shrink:0;width:28px;height:28px;border-radius:8px;
+      background:linear-gradient(135deg,var(--purple-mid),var(--red));
+      display:flex;align-items:center;justify-content:center;
+      font-size:.7rem;font-weight:900;color:white;margin-top:1px;
+    }
+    .step-list li strong{color:var(--white);}
+
+    /* ── Tag reference table ── */
+    .tag-table {
+      width:100%;border-collapse:collapse;margin:22px 0;
+      font-size:.8rem;
+    }
+    .tag-table th {
+      text-align:left;padding:10px 14px;
+      background:rgba(139,0,196,.2);
+      color:rgba(255,255,255,.7);
+      font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;
+      border-bottom:1px solid rgba(139,0,196,.3);
+    }
+    .tag-table td {
+      padding:11px 14px;border-bottom:1px solid var(--border);
+      color:rgba(255,255,255,.65);line-height:1.5;
+      vertical-align:top;
+    }
+    .tag-table tr:last-child td{border-bottom:none;}
+    .tag-table tr:hover td{background:rgba(255,255,255,.03);}
+    .tag-table td:first-child {
+      font-family:'Fira Code',monospace;font-size:.78rem;
+      color:#f87171;white-space:nowrap;
+    }
+    .tag-table td strong{color:var(--white);}
+
+    /* ── Editor cards grid ── */
+    .editor-grid {
+      display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+      gap:18px;margin:22px 0;
+    }
+    .editor-card {
+      padding:20px;border-radius:16px;
+      background:var(--surface);border:1px solid var(--border);
+      transition:all .3s ease;text-align:center;
+    }
+    .editor-card:hover{transform:translateY(-4px);border-color:rgba(196,114,240,.3);background:rgba(139,0,196,.1);}
+    .editor-card .ed-icon{font-size:2rem;margin-bottom:10px;}
+    .editor-card .ed-name{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:900;color:var(--white);margin-bottom:6px;}
+    .editor-card .ed-desc{font-size:.74rem;color:rgba(255,255,255,.5);line-height:1.6;}
+    .editor-card .ed-badge{
+      display:inline-block;margin-top:10px;
+      font-size:.6rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;
+      padding:3px 10px;border-radius:50px;
+      background:rgba(228,77,38,.2);color:#fb923c;border:1px solid rgba(228,77,38,.3);
+    }
+
+    /* ── Best practice checklist ── */
+    .checklist{list-style:none;margin:22px 0;}
+    .checklist li{
+      display:flex;align-items:flex-start;gap:12px;
+      padding:12px 0;border-bottom:1px solid var(--border);
+      font-size:.83rem;color:rgba(255,255,255,.7);line-height:1.65;
+    }
+    .checklist li:last-child{border-bottom:none;}
+    .check-icon{font-size:1rem;flex-shrink:0;margin-top:1px;}
+    .checklist li strong{color:var(--white);}
+
+    /* ── Section divider ── */
+    .sec-divider{
+      height:1px;margin:60px 0;
+      background:linear-gradient(90deg,transparent,rgba(196,114,240,.3),rgba(228,77,38,.3),transparent);
+    }
+
+    /* ══ FOOTER ══ */
+    footer{
+      background:#040008;border-top:3px solid;
+      border-image:linear-gradient(90deg,#8b00c4,#e44d26) 1;
+      padding:44px 6%;display:flex;flex-direction:column;
+      align-items:center;gap:10px;text-align:center;
+    }
+    .ft-school{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:900;letter-spacing:.12em;color:var(--white);}
+    .ft-sep{width:48px;height:1px;background:rgba(255,255,255,.15);}
+    .ft-info{font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.4);}
+    .ft-name{font-size:.82rem;font-weight:600;letter-spacing:.14em;color:var(--purple-light);}
+
+    /* ══ ANIMATIONS ══ */
+    @keyframes fadeUp{from{opacity:0;transform:translateY(26px);}to{opacity:1;transform:translateY(0);}}
+    @keyframes blink{0%,100%{opacity:1;}50%{opacity:.2;}}
+  </style>
+</head>
+<body>
+
+<!-- BACK -->
+<a href="index2.html" class="back-btn">
+  <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+  Volver al portafolio
+</a>
+
+<!-- PROGRESS NAV -->
+<nav class="progress-nav">
+  <a href="#m0" class="pnav-dot" data-label="¿Qué es HTML5?"></a>
+  <a href="#m1" class="pnav-dot" data-label="Herramientas"></a>
+  <a href="#m2" class="pnav-dot" data-label="Estructura base"></a>
+  <a href="#m3" class="pnav-dot" data-label="Etiquetas esenciales"></a>
+  <a href="#m4" class="pnav-dot" data-label="Semántica"></a>
+  <a href="#m5" class="pnav-dot" data-label="Formularios"></a>
+  <a href="#m6" class="pnav-dot" data-label="Multimedia"></a>
+  <a href="#m7" class="pnav-dot" data-label="Buenas prácticas"></a>
+</nav>
+
+<!-- ══════════ HERO ══════════ -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hblob hb1"></div>
+  <div class="hblob hb2"></div>
+  <div class="hero-watermark">HTML</div>
+
+  <!-- Floating tags -->
+  <div class="float-tags" id="floatTags"></div>
+
+  <div class="hero-inner">
+    <div class="hero-badge"><span></span>Tarea 03 &nbsp;·&nbsp; Cultura Digital 2</div>
+
+    <h1 class="hero-title">
+      Guía para<br/>aprender <em>HTML5</em>
+    </h1>
+
+    <p class="hero-sub">
+      Todo lo que necesitas saber para dominar el lenguaje de marcado de la Web: desde instalar tu editor hasta escribir páginas semánticas, accesibles y bien estructuradas.
+    </p>
+
+    <div class="hero-jumps">
+      <a href="#m0" class="jump-pill">¿Qué es HTML5?</a>
+      <a href="#m1" class="jump-pill">Herramientas</a>
+      <a href="#m2" class="jump-pill">Estructura base</a>
+      <a href="#m3" class="jump-pill">Etiquetas</a>
+      <a href="#m4" class="jump-pill">Semántica</a>
+      <a href="#m5" class="jump-pill">Formularios</a>
+      <a href="#m6" class="jump-pill">Multimedia</a>
+      <a href="#m7" class="jump-pill">Buenas prácticas</a>
+    </div>
+  </div>
+  <div class="hero-line"></div>
+</section>
+
+<!-- ══════════ CONTENT ══════════ -->
+<main class="content">
+
+  <!-- ────────────────────────────── -->
+  <!-- MÓDULO 0: ¿Qué es HTML5?      -->
+  <!-- ────────────────────────────── -->
+  <div id="m0" class="module">
+    <div class="module-header">
+      <div class="module-num">0</div>
+      <div class="module-title-wrap">
+        <h2>¿Qué es HTML5?</h2>
+        <p>Conceptos fundamentales · Historia</p>
+      </div>
+    </div>
+
+    <p>
+      <strong>HTML5</strong> (HyperText Markup Language versión 5) es el lenguaje estándar para crear y estructurar el contenido de las páginas web. No es un lenguaje de programación: no tiene variables, condiciones ni bucles. Es un <strong>lenguaje de marcado</strong> que usa etiquetas para indicarle al navegador cómo debe interpretar y mostrar cada parte del contenido.
+    </p>
+    <p>
+      Fue desarrollado por el <strong>W3C (World Wide Web Consortium)</strong> y publicado oficialmente en 2014. Representa un salto enorme respecto a versiones anteriores: agregó soporte nativo para <strong>audio, video, gráficos 2D/3D, geolocalización, almacenamiento local y etiquetas semánticas</strong> que antes requerían plugins externos como Flash.
+    </p>
+
+    <div class="tip-box">
+      <div class="tip-icon">💡</div>
+      <p><strong>Analogía:</strong> Si una página web fuera una casa, HTML sería la <strong>estructura</strong> (paredes, puertas, ventanas), CSS sería la <strong>decoración</strong> (pintura, muebles) y JavaScript sería la <strong>electricidad e instalaciones</strong> (todo lo que se mueve y funciona).</p>
+    </div>
+
+    <p>
+      HTML funciona mediante <strong>etiquetas (tags)</strong> que se escriben entre corchetes angulares: <code style="color:#f87171;font-family:'Fira Code',monospace;">&lt;etiqueta&gt;</code>. La mayoría tienen una etiqueta de apertura y una de cierre: <code style="color:#f87171;font-family:'Fira Code',monospace;">&lt;p&gt;texto&lt;/p&gt;</code>. Algunas son auto-cerradas: <code style="color:#f87171;font-family:'Fira Code',monospace;">&lt;img/&gt;</code>, <code style="color:#f87171;font-family:'Fira Code',monospace;">&lt;br/&gt;</code>.
+    </p>
+  </div>
+
+  <div class="sec-divider"></div>
+
+  <!-- ────────────────────────────── -->
+  <!-- MÓDULO 1: Herramientas        -->
+  <!-- ────────────────────────────── -->
+  <div id="m1" class="module">
+    <div class="module-header">
+      <div class="module-num">1</div>
+      <div class="module-title-wrap">
+        <h2>¿Qué necesitas para empezar?</h2>
+        <p>Editores · Navegadores · Entorno</p>
+      </div>
+    </div>
+
+    <p>
+      La gran ventaja de HTML es que <strong>no necesitas instalar nada especial</strong> para comenzar: solo un editor de texto y un navegador. Sin embargo, los editores de código modernos hacen el trabajo mucho más cómodo y eficiente.
+    </p>
+
+    <div class="editor-grid">
+      <div class="editor-card">
+        <div class="ed-icon">⚡</div>
+        <div class="ed-name">VS Code</div>
+        <div class="ed-desc">El editor más popular del mundo. Gratuito, ligero y con miles de extensiones. <strong>Recomendado para principiantes.</strong></div>
+        <span class="ed-badge">✓ Recomendado</span>
+      </div>
+      <div class="editor-card">
+        <div class="ed-icon">🌊</div>
+        <div class="ed-name">Sublime Text</div>
+        <div class="ed-desc">Muy rápido y minimalista. Ideal si tu computadora tiene recursos limitados. Tiene versión gratuita.</div>
+        <span class="ed-badge">Gratuito</span>
+      </div>
+      <div class="editor-card">
+        <div class="ed-icon">🧠</div>
+        <div class="ed-name">Notepad++</div>
+        <div class="ed-desc">Editor simple para Windows, gratuito y con resaltado de sintaxis básico. Bueno para empezar.</div>
+        <span class="ed-badge">Windows</span>
+      </div>
+      <div class="editor-card">
+        <div class="ed-icon">☁️</div>
+        <div class="ed-name">CodePen / JSFiddle</div>
+        <div class="ed-desc">Editores en línea: no necesitas instalar nada. Perfectos para practicar y ver resultados al instante.</div>
+        <span class="ed-badge">En línea</span>
+      </div>
+    </div>
+
+    <ul class="step-list">
+      <li>
+        <div class="step-num">1</div>
+        <div><strong>Descarga VS Code</strong> desde <code style="color:#86efac;font-family:'Fira Code',monospace;">code.visualstudio.com</code> e instálalo en tu computadora. Es gratuito y funciona en Windows, Mac y Linux.</div>
+      </li>
+      <li>
+        <div class="step-num">2</div>
+        <div><strong>Instala la extensión Live Server</strong> en VS Code (busca "Live Server" en el panel de extensiones). Esta extensión recarga automáticamente tu página en el navegador cada vez que guardas un cambio.</div>
+      </li>
+      <li>
+        <div class="step-num">3</div>
+        <div><strong>Crea una carpeta de proyecto</strong> en tu escritorio, por ejemplo: <code style="color:#86efac;font-family:'Fira Code',monospace;">mi-primera-pagina/</code>. Abre esa carpeta en VS Code con <em>Archivo → Abrir carpeta</em>.</div>
+      </li>
+      <li>
+        <div class="step-num">4</div>
+        <div><strong>Crea el archivo</strong> <code style="color:#86efac;font-family:'Fira Code',monospace;">index.html</code> dentro de esa carpeta. El nombre <code style="color:#86efac;font-family:'Fira Code',monospace;">index.html</code> es especial: es la página que los servidores web muestran por defecto.</div>
+      </li>
+      <li>
+        <div class="step-num">5</div>
+        <div><strong>Haz clic derecho</strong> en el archivo y selecciona <em>"Open with Live Server"</em>. Se abrirá tu navegador y verás el resultado en tiempo real.</div>
+      </li>
+    </ul>
+
+    <div class="tip-box">
+      <div class="tip-icon">⌨️</div>
+      <p><strong>Atajo mágico en VS Code:</strong> Abre tu archivo <code style="color:#c472f0;font-family:'Fira Code',monospace;">index.html</code>, escribe solamente <code style="color:#c472f0;font-family:'Fira Code',monospace;">!</code> y presiona <strong>Tab</strong>. VS Code generará automáticamente toda la estructura base de HTML5. ¡Así de fácil!</p>
+    </div>
+  </div>
+
+  <div class="sec-divider"></div>
+
+  <!-- ────────────────────────────── -->
+  <!-- MÓDULO 2: Estructura base      -->
+  <!-- ────────────────────────────── -->
+  <div id="m2" class="module">
+    <div class="module-header">
+      <div class="module-num">2</div>
+      <div class="module-title-wrap">
+        <h2>La estructura base de HTML5</h2>
+        <p>Esqueleto · DOCTYPE · Head · Body</p>
+      </div>
+    </div>
+
+    <p>
+      Todo documento HTML5 válido debe tener una <strong>estructura mínima obligatoria</strong>. Sin ella, el navegador intentará interpretar tu página de todas formas, pero con resultados impredecibles. Aquí está el esqueleto básico que debes usar siempre:
+    </p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <div class="code-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div>
+        <span class="code-file">index.html — Estructura mínima obligatoria</span>
+      </div>
+      <pre><span class="cm">&lt;!-- 1. Declaración DOCTYPE: le dice al navegador que es HTML5 --&gt;</span>
+<span class="tag">&lt;!DOCTYPE html&gt;</span>
+
+<span class="cm">&lt;!-- 2. Elemento raíz: envuelve todo el documento --&gt;</span>
+<span class="tag">&lt;html</span> <span class="atr">lang</span>=<span class="val">"es"</span><span class="tag">&gt;</span>
+
+  <span class="cm">&lt;!-- 3. HEAD: metadatos, no se muestra en la página --&gt;</span>
+  <span class="tag">&lt;head&gt;</span>
+    <span class="tag">&lt;meta</span> <span class="atr">charset</span>=<span class="val">"UTF-8"</span><span class="tag">/&gt;</span>                          <span class="cm">&lt;!-- Codificación de caracteres --&gt;</span>
+    <span class="tag">&lt;meta</span> <span class="atr">name</span>=<span class="val">"viewport"</span> <span class="atr">content</span>=<span class="val">"width=device-width, initial-scale=1.0"</span><span class="tag">/&gt;</span>  <span class="cm">&lt;!-- Responsive --&gt;</span>
+    <span class="tag">&lt;meta</span> <span class="atr">name</span>=<span class="val">"description"</span> <span class="atr">content</span>=<span class="val">"Mi página de Cultura Digital 2"</span><span class="tag">/&gt;</span>
+    <span class="tag">&lt;title&gt;</span>Cultura Digital 2 – CBTis 144<span class="tag">&lt;/title&gt;</span>  <span class="cm">&lt;!-- Título en la pestaña --&gt;</span>
+    <span class="tag">&lt;link</span> <span class="atr">rel</span>=<span class="val">"stylesheet"</span> <span class="atr">href</span>=<span class="val">"estilos.css"</span><span class="tag">/&gt;</span>    <span class="cm">&lt;!-- Hoja de estilos externa --&gt;</span>
+  <span class="tag">&lt;/head&gt;</span>
+
+  <span class="cm">&lt;!-- 4. BODY: todo el contenido visible de la página --&gt;</span>
+  <span class="tag">&lt;body&gt;</span>
+    <span class="tag">&lt;h1&gt;</span>¡Hola, mundo!<span class="tag">&lt;/h1&gt;</span>
+    <span class="tag">&lt;p&gt;</span>Mi primera página con HTML5.<span class="tag">&lt;/p&gt;</span>
+  <span class="tag">&lt;/body&gt;</span>
+
+<span class="tag">&lt;/html&gt;</span></pre>
+    </div>
+
+    <p>
+      Cada parte tiene su función específica. El <strong>&lt;!DOCTYPE html&gt;</strong> no es una etiqueta HTML sino una instrucción para el navegador. El atributo <code style="color:#60a5fa;font-family:'Fira Code',monospace;">lang="es"</code> en la etiqueta <code style="color:#f87171;font-family:'Fira Code',monospace;">&lt;html&gt;</code> es importante para la accesibilidad y los motores de búsqueda. <code style="color:#86efac;font-family:'Fira Code',monospace;">charset="UTF-8"</code> garantiza que tu página muestre correctamente acentos y caracteres especiales del español.
+    </p>
+
+    <div class="warn-box">
+      <div class="tip-icon">⚠️</div>
+      <p><strong>Error común:</strong> Olvidar el <code style="color:#fb923c;font-family:'Fira Code',monospace;">&lt;!DOCTYPE html&gt;</code> hace que el navegador entre en "modo quirks" (compatibilidad con navegadores viejos), lo que puede cambiar radicalmente cómo se ve tu página. <strong>Siempre debe ser la primera línea.</strong></p>
+    </div>
+  </div>
+
+  <div class="sec-divider"></div>
+
+  <!-- ────────────────────────────── -->
+  <!-- MÓDULO 3: Etiquetas esenciales  -->
+  <!-- ────────────────────────────── -->
+  <div id="m3" class="module">
+    <div class="module-header">
+      <div class="module-num">3</div>
+      <div class="module-title-wrap">
+        <h2>Etiquetas esenciales</h2>
+        <p>Texto · Listas · Tablas · Enlaces · Imágenes</p>
+      </div>
+    </div>
+
+    <p>
+      HTML5 tiene más de 100 etiquetas, pero con dominar las más frecuentes ya puedes construir páginas completas. Aquí están las <strong>más importantes agrupadas por categoría</strong>:
+    </p>
+
+    <table class="tag-table">
+      <thead>
+        <tr>
+          <th>Etiqueta</th>
+          <th>Nombre</th>
+          <th>Para qué sirve</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>&lt;h1&gt;…&lt;h6&gt;</td><td>Encabezados</td><td>Títulos de 6 niveles. <strong>Solo debe haber un &lt;h1&gt;</strong> por página (el título principal).</td></tr>
+        <tr><td>&lt;p&gt;</td><td>Párrafo</td><td>Bloque de texto. El navegador agrega márgenes automáticamente encima y debajo.</td></tr>
+        <tr><td>&lt;strong&gt;</td><td>Negrita semántica</td><td>Texto importante. A diferencia de &lt;b&gt;, indica importancia semántica (no solo visual).</td></tr>
+        <tr><td>&lt;em&gt;</td><td>Énfasis / cursiva</td><td>Texto con énfasis. Más semántico que &lt;i&gt;.</td></tr>
+        <tr><td>&lt;a href="…"&gt;</td><td>Enlace (anchor)</td><td>Crea hipervínculos a otras páginas, secciones o archivos. El atributo <code style="color:#60a5fa;">href</code> es obligatorio.</td></tr>
+        <tr><td>&lt;img src="…" alt="…"&gt;</td><td>Imagen</td><td>Incrusta imágenes. <code style="color:#60a5fa;">src</code> es la ruta y <code style="color:#60a5fa;">alt</code> es el texto alternativo (obligatorio para accesibilidad).</td></tr>
+        <tr><td>&lt;ul&gt; / &lt;ol&gt;</td><td>Listas</td><td><code style="color:#f87171;">&lt;ul&gt;</code> lista sin orden (viñetas), <code style="color:#f87171;">&lt;ol&gt;</code> lista numerada. Sus elementos son <code style="color:#f87171;">&lt;li&gt;</code>.</td></tr>
+        <tr><td>&lt;table&gt;</td><td>Tabla</td><td>Estructura de datos en filas (&lt;tr&gt;) y celdas (&lt;td&gt;). Encabezados de columna con &lt;th&gt;.</td></tr>
+        <tr><td>&lt;div&gt;</td><td>División</td><td>Contenedor genérico de bloque. Agrupa elementos para aplicarles estilos CSS.</td></tr>
+        <tr><td>&lt;span&gt;</td><td>Fragmento en línea</td><td>Contenedor genérico en línea. Útil para aplicar estilos a partes de un texto.</td></tr>
+        <tr><td>&lt;br/&gt;</td><td>Salto de línea</td><td>Inserta un salto de línea. No crea un nuevo párrafo.</td></tr>
+        <tr><td>&lt;hr/&gt;</td><td>Línea horizontal</td><td>Separador visual entre secciones de contenido.</td></tr>
+      </tbody>
+    </table>
+
+    <div class="code-block">
+      <div class="code-header">
+        <div class="code-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div>
+        <span class="code-file">ejemplo-etiquetas.html</span>
+      </div>
+      <pre><span class="cm">&lt;!-- Encabezados --&gt;</span>
+<span class="tag">&lt;h1&gt;</span>Título principal de la página<span class="tag">&lt;/h1&gt;</span>
+<span class="tag">&lt;h2&gt;</span>Subtítulo de sección<span class="tag">&lt;/h2&gt;</span>
+<span class="tag">&lt;h3&gt;</span>Subtítulo de subsección<span class="tag">&lt;/h3&gt;</span>
+
+<span class="cm">&lt;!-- Párrafo con texto enriquecido --&gt;</span>
+<span class="tag">&lt;p&gt;</span>HTML5 es el lenguaje de la <span class="tag">&lt;strong&gt;</span>Web moderna<span class="tag">&lt;/strong&gt;</span>. 
+Fue publicado en <span class="tag">&lt;em&gt;</span>2014<span class="tag">&lt;/em&gt;</span> por el W3C.<span class="tag">&lt;/p&gt;</span>
+
+<span class="cm">&lt;!-- Enlace externo e interno --&gt;</span>
+<span class="tag">&lt;a</span> <span class="atr">href</span>=<span class="val">"https://developer.mozilla.org"</span> <span class="atr">target</span>=<span class="val">"_blank"</span><span class="tag">&gt;</span>
+  Documentación oficial MDN
+<span class="tag">&lt;/a&gt;</span>
+
+<span class="cm">&lt;!-- Imagen con texto alternativo --&gt;</span>
+<span class="tag">&lt;img</span> <span class="atr">src</span>=<span class="val">"./imagenes/html5-logo.png"</span> 
+     <span class="atr">alt</span>=<span class="val">"Logo de HTML5"</span>
+     <span class="atr">width</span>=<span class="val">"120"</span><span class="tag">/&gt;</span>
+
+<span class="cm">&lt;!-- Lista no ordenada y ordenada --&gt;</span>
+<span class="tag">&lt;ul&gt;</span>
+  <span class="tag">&lt;li&gt;</span>HTML5 – Estructura<span class="tag">&lt;/li&gt;</span>
+  <span class="tag">&lt;li&gt;</span>CSS3 – Estilos<span class="tag">&lt;/li&gt;</span>
+  <span class="tag">&lt;li&gt;</span>JavaScript – Interactividad<span class="tag">&lt;/li&gt;</span>
+<span class="tag">&lt;/ul&gt;</span></pre>
+    </div>
+  </div>
+
+  <div class="sec-divider"></div>
+
+  <!-- ────────────────────────────── -->
+  <!-- MÓDULO 4: HTML Semántico       -->
+  <!-- ────────────────────────────── -->
+  <div id="m4" class="module">
+    <div class="module-header">
+      <div class="module-num">4</div>
+      <div class="module-title-wrap">
+        <h2>HTML Semántico</h2>
+        <p>Estructura significativa · SEO · Accesibilidad</p>
+      </div>
+    </div>
+
+    <p>
+      Una de las grandes novedades de HTML5 fue la introducción de <strong>etiquetas semánticas</strong>: etiquetas que describen el <em>significado</em> del contenido que contienen, no solo cómo se ve. Antes de HTML5, todo se estructuraba con <code style="color:#f87171;font-family:'Fira Code',monospace;">&lt;div&gt;</code> genéricos. Ahora existen etiquetas específicas para cada parte de una página.
+    </p>
+
+    <div class="tip-box">
+      <div class="tip-icon">🔍</div>
+      <p><strong>¿Por qué importa?</strong> Las etiquetas semánticas ayudan a los <strong>motores de búsqueda</strong> (Google, Bing) a entender mejor tu página y mejorar tu posicionamiento. También son esenciales para la <strong>accesibilidad</strong>: los lectores de pantalla para personas con discapacidad visual las usan para navegar el contenido.</p>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">
+        <div class="code-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div>
+        <span class="code-file">estructura-semantica.html</span>
+      </div>
+      <pre><span class="tag">&lt;body&gt;</span>
+
+  <span class="cm">&lt;!-- Cabecera del sitio: logo, menú de navegación --&gt;</span>
+  <span class="tag">&lt;header&gt;</span>
+    <span class="tag">&lt;h1&gt;</span>CBTis 144 – Portafolio Digital<span class="tag">&lt;/h1&gt;</span>
+    <span class="tag">&lt;nav&gt;</span>
+      <span class="tag">&lt;a</span> <span class="atr">href</span>=<span class="val">"#inicio"</span><span class="tag">&gt;</span>Inicio<span class="tag">&lt;/a&gt;</span>
+      <span class="tag">&lt;a</span> <span class="atr">href</span>=<span class="val">"#tareas"</span><span class="tag">&gt;</span>Tareas<span class="tag">&lt;/a&gt;</span>
+    <span class="tag">&lt;/nav&gt;</span>
+  <span class="tag">&lt;/header&gt;</span>
+
+  <span class="cm">&lt;!-- Contenido principal de la página --&gt;</span>
+  <span class="tag">&lt;main&gt;</span>
+
+    <span class="cm">&lt;!-- Sección temática con título --&gt;</span>
+    <span class="tag">&lt;section</span> <span class="atr">id</span>=<span class="val">"tareas"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;h2&gt;</span>Mis Tareas<span class="tag">&lt;/h2&gt;</span>
+
+      <span class="cm">&lt;!-- Artículo: contenido independiente y reutilizable --&gt;</span>
+      <span class="tag">&lt;article&gt;</span>
+        <span class="tag">&lt;h3&gt;</span>Tarea 01 – Tim Berners-Lee<span class="tag">&lt;/h3&gt;</span>
+        <span class="tag">&lt;p&gt;</span>El padre de la World Wide Web...<span class="tag">&lt;/p&gt;</span>
+      <span class="tag">&lt;/article&gt;</span>
+    <span class="tag">&lt;/section&gt;</span>
+
+    <span class="cm">&lt;!-- Barra lateral: contenido complementario --&gt;</span>
+    <span class="tag">&lt;aside&gt;</span>
+      <span class="tag">&lt;h3&gt;</span>Recursos extra<span class="tag">&lt;/h3&gt;</span>
+      <span class="tag">&lt;p&gt;</span>Links y referencias útiles...<span class="tag">&lt;/p&gt;</span>
+    <span class="tag">&lt;/aside&gt;</span>
+
+  <span class="tag">&lt;/main&gt;</span>
+
+  <span class="cm">&lt;!-- Pie de página: autor, copyright, links legales --&gt;</span>
+  <span class="tag">&lt;footer&gt;</span>
+    <span class="tag">&lt;p&gt;</span>© 2025 Joaquin Santos Gumeta – CBTis 144<span class="tag">&lt;/p&gt;</span>
+  <span class="tag">&lt;/footer&gt;</span>
+
+<span class="tag">&lt;/body&gt;</span></pre>
+    </div>
+
+    <table class="tag-table">
+      <thead><tr><th>Etiqueta semántica</th><th>Significado</th></tr></thead>
+      <tbody>
+        <tr><td>&lt;header&gt;</td><td><strong>Encabezado</strong> de la página o de una sección. Generalmente contiene el logo y la navegación principal.</td></tr>
+        <tr><td>&lt;nav&gt;</td><td><strong>Navegación</strong> principal. Agrupa los enlaces de menú del sitio.</td></tr>
+        <tr><td>&lt;main&gt;</td><td><strong>Contenido principal</strong>. Debe haber solo uno por página y no debe incluir header ni footer.</td></tr>
+        <tr><td>&lt;section&gt;</td><td><strong>Sección temática</strong>. Agrupa contenido relacionado y siempre debería tener un encabezado.</td></tr>
+        <tr><td>&lt;article&gt;</td><td><strong>Artículo independiente</strong>. Contenido que podría redistribuirse solo: una noticia, un post, una tarea.</td></tr>
+        <tr><td>&lt;aside&gt;</td><td><strong>Contenido complementario</strong>. Barras laterales, anuncios, notas al margen.</td></tr>
+        <tr><td>&lt;footer&gt;</td><td><strong>Pie de página</strong>. Autor, copyright, links de contacto, redes sociales.</td></tr>
+        <tr><td>&lt;figure&gt; / &lt;figcaption&gt;</td><td>Imagen o ilustración con su <strong>pie de foto</strong>.</td></tr>
+        <tr><td>&lt;time datetime="…"&gt;</td><td>Fecha u hora con formato legible por máquinas. Mejora el SEO.</td></tr>
+        <tr><td>&lt;mark&gt;</td><td>Texto <strong>resaltado</strong> como relevante en el contexto actual (como un marcador fluorescente).</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="sec-divider"></div>
+
+  <!-- ────────────────────────────── -->
+  <!-- MÓDULO 5: Formularios          -->
+  <!-- ────────────────────────────── -->
+  <div id="m5" class="module">
+    <div class="module-header">
+      <div class="module-num">5</div>
+      <div class="module-title-wrap">
+        <h2>Formularios en HTML5</h2>
+        <p>Inputs · Validación nativa · Tipos de campo</p>
+      </div>
+    </div>
+
+    <p>
+      Los formularios son la principal forma en que los usuarios <strong>envían información</strong> a un sitio web: registros, contactos, búsquedas, pagos. HTML5 introdujo muchos <strong>nuevos tipos de input</strong> con validación automática, sin necesidad de JavaScript.
+    </p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <div class="code-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div>
+        <span class="code-file">formulario-registro.html</span>
+      </div>
+      <pre><span class="tag">&lt;form</span> <span class="atr">action</span>=<span class="val">"/registrar"</span> <span class="atr">method</span>=<span class="val">"POST"</span><span class="tag">&gt;</span>
+
+  <span class="cm">&lt;!-- Texto simple --&gt;</span>
+  <span class="tag">&lt;label</span> <span class="atr">for</span>=<span class="val">"nombre"</span><span class="tag">&gt;</span>Nombre completo:<span class="tag">&lt;/label&gt;</span>
+  <span class="tag">&lt;input</span> <span class="atr">type</span>=<span class="val">"text"</span> <span class="atr">id</span>=<span class="val">"nombre"</span> <span class="atr">name</span>=<span class="val">"nombre"</span>
+         <span class="atr">placeholder</span>=<span class="val">"Ej: Joaquin Santos"</span> <span class="atr">required</span><span class="tag">/&gt;</span>
+
+  <span class="cm">&lt;!-- Email con validación automática --&gt;</span>
+  <span class="tag">&lt;label</span> <span class="atr">for</span>=<span class="val">"email"</span><span class="tag">&gt;</span>Correo electrónico:<span class="tag">&lt;/label&gt;</span>
+  <span class="tag">&lt;input</span> <span class="atr">type</span>=<span class="val">"email"</span> <span class="atr">id</span>=<span class="val">"email"</span> <span class="atr">name</span>=<span class="val">"email"</span>
+         <span class="atr">placeholder</span>=<span class="val">"correo@cbtis144.edu.mx"</span> <span class="atr">required</span><span class="tag">/&gt;</span>
+
+  <span class="cm">&lt;!-- Número con rango --&gt;</span>
+  <span class="tag">&lt;label</span> <span class="atr">for</span>=<span class="val">"edad"</span><span class="tag">&gt;</span>Edad:<span class="tag">&lt;/label&gt;</span>
+  <span class="tag">&lt;input</span> <span class="atr">type</span>=<span class="val">"number"</span> <span class="atr">id</span>=<span class="val">"edad"</span> <span class="atr">name</span>=<span class="val">"edad"</span>
+         <span class="atr">min</span>=<span class="val">"15"</span> <span class="atr">max</span>=<span class="val">"100"</span><span class="tag">/&gt;</span>
+
+  <span class="cm">&lt;!-- Lista desplegable --&gt;</span>
+  <span class="tag">&lt;label</span> <span class="atr">for</span>=<span class="val">"semestre"</span><span class="tag">&gt;</span>Semestre:<span class="tag">&lt;/label&gt;</span>
+  <span class="tag">&lt;select</span> <span class="atr">id</span>=<span class="val">"semestre"</span> <span class="atr">name</span>=<span class="val">"semestre"</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;option</span> <span class="atr">value</span>=<span class="val">"1"</span><span class="tag">&gt;</span>Primer semestre<span class="tag">&lt;/option&gt;</span>
+    <span class="tag">&lt;option</span> <span class="atr">value</span>=<span class="val">"4"</span> <span class="atr">selected</span><span class="tag">&gt;</span>Cuarto semestre<span class="tag">&lt;/option&gt;</span>
+    <span class="tag">&lt;option</span> <span class="atr">value</span>=<span class="val">"6"</span><span class="tag">&gt;</span>Sexto semestre<span class="tag">&lt;/option&gt;</span>
+  <span class="tag">&lt;/select&gt;</span>
+
+  <span class="cm">&lt;!-- Área de texto grande --&gt;</span>
+  <span class="tag">&lt;label</span> <span class="atr">for</span>=<span class="val">"mensaje"</span><span class="tag">&gt;</span>Comentario:<span class="tag">&lt;/label&gt;</span>
+  <span class="tag">&lt;textarea</span> <span class="atr">id</span>=<span class="val">"mensaje"</span> <span class="atr">name</span>=<span class="val">"mensaje"</span>
+             <span class="atr">rows</span>=<span class="val">"4"</span> <span class="atr">placeholder</span>=<span class="val">"Escribe aquí..."</span><span class="tag">&gt;&lt;/textarea&gt;</span>
+
+  <span class="cm">&lt;!-- Botón de envío --&gt;</span>
+  <span class="tag">&lt;button</span> <span class="atr">type</span>=<span class="val">"submit"</span><span class="tag">&gt;</span>Enviar registro<span class="tag">&lt;/button&gt;</span>
+
+<span class="tag">&lt;/form&gt;</span></pre>
+    </div>
+
+    <div class="tip-box">
+      <div class="tip-icon">🔐</div>
+      <p><strong>Atributos de validación HTML5:</strong> <code style="color:#c472f0;font-family:'Fira Code',monospace;">required</code> hace el campo obligatorio, <code style="color:#c472f0;font-family:'Fira Code',monospace;">minlength</code>/<code style="color:#c472f0;font-family:'Fira Code',monospace;">maxlength</code> controlan la longitud del texto, <code style="color:#c472f0;font-family:'Fira Code',monospace;">pattern</code> acepta expresiones regulares y <code style="color:#c472f0;font-family:'Fira Code',monospace;">type="email"</code> valida el formato de correo. <strong>Todo sin una sola línea de JavaScript.</strong></p>
+    </div>
+  </div>
+
+  <div class="sec-divider"></div>
+
+  <!-- ────────────────────────────── -->
+  <!-- MÓDULO 6: Multimedia           -->
+  <!-- ────────────────────────────── -->
+  <div id="m6" class="module">
+    <div class="module-header">
+      <div class="module-num">6</div>
+      <div class="module-title-wrap">
+        <h2>Multimedia en HTML5</h2>
+        <p>Audio · Video · Canvas · Iframe</p>
+      </div>
+    </div>
+
+    <p>
+      Antes de HTML5 era necesario instalar el plugin <strong>Adobe Flash</strong> para reproducir video o audio en un navegador. HTML5 eliminó esa dependencia por completo al incluir etiquetas nativas para multimedia. Hoy YouTube, Spotify y Netflix funcionan gracias a estas etiquetas.
+    </p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <div class="code-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div>
+        <span class="code-file">multimedia.html</span>
+      </div>
+      <pre><span class="cm">&lt;!-- ① VIDEO nativo --&gt;</span>
+<span class="tag">&lt;video</span> <span class="atr">controls</span> <span class="atr">autoplay</span> <span class="atr">muted</span> <span class="atr">loop</span>
+       <span class="atr">width</span>=<span class="val">"720"</span> <span class="atr">poster</span>=<span class="val">"miniatura.jpg"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;source</span> <span class="atr">src</span>=<span class="val">"video.mp4"</span>  <span class="atr">type</span>=<span class="val">"video/mp4"</span><span class="tag">/&gt;</span>
+  <span class="tag">&lt;source</span> <span class="atr">src</span>=<span class="val">"video.webm"</span> <span class="atr">type</span>=<span class="val">"video/webm"</span><span class="tag">/&gt;</span>
+  <span class="txt">Tu navegador no soporta video HTML5.</span>
+<span class="tag">&lt;/video&gt;</span>
+
+<span class="cm">&lt;!-- ② AUDIO nativo --&gt;</span>
+<span class="tag">&lt;audio</span> <span class="atr">controls</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;source</span> <span class="atr">src</span>=<span class="val">"musica.mp3"</span> <span class="atr">type</span>=<span class="val">"audio/mpeg"</span><span class="tag">/&gt;</span>
+  <span class="tag">&lt;source</span> <span class="atr">src</span>=<span class="val">"musica.ogg"</span> <span class="atr">type</span>=<span class="val">"audio/ogg"</span><span class="tag">/&gt;</span>
+<span class="tag">&lt;/audio&gt;</span>
+
+<span class="cm">&lt;!-- ③ CANVAS: dibujo 2D programable con JavaScript --&gt;</span>
+<span class="tag">&lt;canvas</span> <span class="atr">id</span>=<span class="val">"miCanvas"</span> <span class="atr">width</span>=<span class="val">"400"</span> <span class="atr">height</span>=<span class="val">"200"</span><span class="tag">&gt;&lt;/canvas&gt;</span>
+<span class="tag">&lt;script&gt;</span>
+  <span class="kw">const</span> ctx = document.<span class="atr">getElementById</span>(<span class="val">'miCanvas'</span>).<span class="atr">getContext</span>(<span class="val">'2d'</span>);
+  ctx.fillStyle = <span class="val">'#8b00c4'</span>;
+  ctx.<span class="atr">fillRect</span>(<span class="val">20, 20, 150, 80</span>); <span class="cm">// x, y, ancho, alto</span>
+<span class="tag">&lt;/script&gt;</span>
+
+<span class="cm">&lt;!-- ④ IFRAME: incrustar otra página (ej: Google Maps) --&gt;</span>
+<span class="tag">&lt;iframe</span>
+  <span class="atr">src</span>=<span class="val">"https://www.youtube.com/embed/XXXXXXXXXXX"</span>
+  <span class="atr">width</span>=<span class="val">"720"</span> <span class="atr">height</span>=<span class="val">"405"</span>
+  <span class="atr">title</span>=<span class="val">"Video de YouTube"</span>
+  <span class="atr">allowfullscreen</span>
+<span class="tag">&gt;&lt;/iframe&gt;</span></pre>
+    </div>
+  </div>
+
+  <div class="sec-divider"></div>
+
+  <!-- ────────────────────────────── -->
+  <!-- MÓDULO 7: Buenas prácticas     -->
+  <!-- ────────────────────────────── -->
+  <div id="m7" class="module">
+    <div class="module-header">
+      <div class="module-num">7</div>
+      <div class="module-title-wrap">
+        <h2>Buenas prácticas en HTML5</h2>
+        <p>Código limpio · Accesibilidad · SEO · Rendimiento</p>
+      </div>
+    </div>
+
+    <p>
+      Saber escribir HTML es la primera parte. Escribirlo <strong>bien</strong> es lo que distingue a un desarrollador profesional. Estas buenas prácticas harán tu código más legible, mantenible, accesible y posicionable:
+    </p>
+
+    <ul class="checklist">
+      <li>
+        <span class="check-icon">✅</span>
+        <div><strong>Usa siempre el DOCTYPE y el atributo lang.</strong> Son obligatorios para que tu página sea válida y accesible. <code style="color:#f87171;font-family:'Fira Code',monospace;">&lt;!DOCTYPE html&gt;</code> y <code style="color:#f87171;font-family:'Fira Code',monospace;">&lt;html lang="es"&gt;</code> van siempre en la primera y segunda línea.</div>
+      </li>
+      <li>
+        <span class="check-icon">✅</span>
+        <div><strong>Escribe etiquetas en minúsculas.</strong> Aunque HTML no distingue mayúsculas de minúsculas, la convención estándar es usar minúsculas: <code style="color:#f87171;font-family:'Fira Code',monospace;">&lt;div&gt;</code> no <code style="color:#f87171;font-family:'Fira Code',monospace;">&lt;DIV&gt;</code>.</div>
+      </li>
+      <li>
+        <span class="check-icon">✅</span>
+        <div><strong>Usa comillas en los atributos.</strong> Siempre pon los valores entre comillas: <code style="color:#f87171;font-family:'Fira Code',monospace;">&lt;img src="foto.jpg"&gt;</code>. Evita omitirlas aunque técnicamente funcione en algunos casos.</div>
+      </li>
+      <li>
+        <span class="check-icon">✅</span>
+        <div><strong>Agrega siempre el atributo alt en las imágenes.</strong> Es obligatorio para la accesibilidad. Describe el contenido de la imagen: <code style="color:#f87171;font-family:'Fira Code',monospace;">alt="Logo de HTML5 en naranja"</code>.</div>
+      </li>
+      <li>
+        <span class="check-icon">✅</span>
+        <div><strong>Usa etiquetas semánticas, no solo divs.</strong> Reemplaza <code style="color:#f87171;font-family:'Fira Code',monospace;">&lt;div id="nav"&gt;</code> por <code style="color:#f87171;font-family:'Fira Code',monospace;">&lt;nav&gt;</code>, <code style="color:#f87171;font-family:'Fira Code',monospace;">&lt;div id="pie"&gt;</code> por <code style="color:#f87171;font-family:'Fira Code',monospace;">&lt;footer&gt;</code>, etc. Mejora el SEO y la accesibilidad.</div>
+      </li>
+      <li>
+        <span class="check-icon">✅</span>
+        <div><strong>Un solo &lt;h1&gt; por página.</strong> El <code style="color:#f87171;font-family:'Fira Code',monospace;">&lt;h1&gt;</code> es el título principal. Puede haber varios <code style="color:#f87171;font-family:'Fira Code',monospace;">&lt;h2&gt;</code>, <code style="color:#f87171;font-family:'Fira Code',monospace;">&lt;h3&gt;</code>, etc., pero el H1 solo debe aparecer una vez. Es crucial para el SEO.</div>
+      </li>
+      <li>
+        <span class="check-icon">✅</span>
+        <div><strong>Separa HTML, CSS y JavaScript.</strong> El HTML va en <code style="color:#86efac;font-family:'Fira Code',monospace;">.html</code>, el CSS en <code style="color:#86efac;font-family:'Fira Code',monospace;">.css</code> y el JS en <code style="color:#86efac;font-family:'Fira Code',monospace;">.js</code>. Evita usar estilos en línea (<code style="color:#f87171;font-family:'Fira Code',monospace;">style="..."</code>) y scripts directamente en el HTML.</div>
+      </li>
+      <li>
+        <span class="check-icon">✅</span>
+        <div><strong>Indenta correctamente tu código.</strong> Cada nivel de anidación debe tener 2 o 4 espacios de sangría. Esto hace el código legible. VS Code tiene el atajo <strong>Alt+Shift+F</strong> para formatear automáticamente.</div>
+      </li>
+      <li>
+        <span class="check-icon">✅</span>
+        <div><strong>Valida tu código HTML.</strong> Usa el validador oficial del W3C en <code style="color:#86efac;font-family:'Fira Code',monospace;">validator.w3.org</code> para detectar errores. Un HTML válido se renderiza de forma consistente en todos los navegadores.</div>
+      </li>
+      <li>
+        <span class="check-icon">✅</span>
+        <div><strong>Optimiza las imágenes antes de subirlas.</strong> Usa formatos modernos como <strong>WebP</strong> o <strong>AVIF</strong>. Una imagen pesada puede hacer que tu página cargue lenta. Herramientas como <code style="color:#86efac;font-family:'Fira Code',monospace;">squoosh.app</code> te ayudan a comprimirlas sin perder calidad.</div>
+      </li>
+    </ul>
+
+    <div class="warn-box">
+      <div class="tip-icon">🚫</div>
+      <p><strong>Errores comunes que debes evitar:</strong> No cerrar etiquetas como <code style="color:#fb923c;font-family:'Fira Code',monospace;">&lt;/p&gt;</code> o <code style="color:#fb923c;font-family:'Fira Code',monospace;">&lt;/li&gt;</code>, anidar etiquetas de bloque dentro de etiquetas en línea (como poner un <code style="color:#fb923c;font-family:'Fira Code',monospace;">&lt;div&gt;</code> dentro de un <code style="color:#fb923c;font-family:'Fira Code',monospace;">&lt;span&gt;</code>), usar tablas para hacer layouts de diseño, y copiar código sin entenderlo.</p>
+    </div>
+
+    <div class="tip-box">
+      <div class="tip-icon">📚</div>
+      <p><strong>Recurso oficial recomendado:</strong> La mejor documentación de HTML5 es <strong>MDN Web Docs</strong> (Mozilla Developer Network) en <code style="color:#c472f0;font-family:'Fira Code',monospace;">developer.mozilla.org/es</code>. Está disponible en español y es mantenida por la comunidad web mundial. También puedes practicar de forma interactiva en <code style="color:#c472f0;font-family:'Fira Code',monospace;">freecodecamp.org</code> completamente gratis.</p>
+    </div>
+  </div>
+
+</main>
+
+<!-- ══════════ FOOTER ══════════ -->
+<footer>
+  <p class="ft-school">Centro de Bachillerato Tecnologico Industrial y de Servicios 144</p>
+  <div class="ft-sep"></div>
+  <p class="ft-info">Especialidad: Inteligencia Artificial</p>
+  <p class="ft-name">Alumno: Joaquin Santos Gumeta</p>
+  <p class="ft-name">Profesor: Jordy Chirino Balcazar</p>
+  <p class="ft-info" style="font-size:.68rem;margin-top:2px;">Cultura Digital 2 · 2025</p>
+</footer>
+
+<script>
+  // Floating HTML tags background animation
+  const tags = ['&lt;html&gt;','&lt;/html&gt;','&lt;div&gt;','&lt;p&gt;','&lt;h1&gt;','&lt;nav&gt;','&lt;header&gt;','&lt;footer&gt;','&lt;section&gt;','&lt;article&gt;','&lt;img/&gt;','&lt;a href&gt;','&lt;form&gt;','&lt;input/&gt;','&lt;video&gt;','charset','DOCTYPE','&lt;main&gt;','&lt;aside&gt;','&lt;ul&gt;','&lt;li&gt;'];
+  const container = document.getElementById('floatTags');
+  const count = Math.floor(window.innerWidth / 120);
+  for (let i = 0; i < count; i++) {
+    const el = document.createElement('div');
+    el.className = 'ftag';
+    el.innerHTML = tags[Math.floor(Math.random() * tags.length)];
+    el.style.left = (Math.random() * 95) + '%';
+    el.style.animationDuration = (12 + Math.random() * 16) + 's';
+    el.style.animationDelay = (-Math.random() * 20) + 's';
+    el.style.fontSize = (0.65 + Math.random() * 0.5) + 'rem';
+    container.appendChild(el);
+  }
+
+  // Progress nav active dot
+  const dots = document.querySelectorAll('.pnav-dot');
+  const modules = document.querySelectorAll('[id^="m"]');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        dots.forEach(d => d.classList.remove('active'));
+        const idx = [...modules].indexOf(entry.target);
+        if (dots[idx]) dots[idx].classList.add('active');
+      }
+    });
+  }, { threshold: 0.4 });
+  modules.forEach(m => observer.observe(m));
+</script>
+
+</body>
+</html>
